@@ -5,4 +5,9 @@
 			<span class="chat-message__name">{{name}}</span>: <span class="chat-message__text">{{text}}</span>
 		</div>
 	{{/each}}
+	<div class="chat-form">
+		<input type="text" value="{{myname}}" class="chat-form__name">
+		<input type="text" value="{{chatMessage}}" class="chat-form__text">
+		<input type="button" on-click="chatSend" class="chat-form__submit">
+	</div>
 </div>

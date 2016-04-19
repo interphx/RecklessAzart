@@ -12,15 +12,41 @@ function getTemplate(template_name) {
 }
 
 var ChatView = (function() {
-    function ChatView() {
-        var $chat = $('.chat');
+    function ChatView(socket) {
+        var self = this;
+        
+        this.$chat = $('.chat');
+        this.socket = socket;
         this.ractive = new Ractive({
-            el: $chat[0],
+            el: this.$chat[0],
             partials: loaded_templates,
             template: getTemplate('chat'),
             data: {
+                myname: 'user' + ((Math.random() * 100500) | 0),
+                chatMessage: '',
                 messages: []
             }
+        });
+        
+        this.ractive.on('chatSend', function() {
+            var name = self.ractive.get('myname');
+            var text = self.ractive.get('chatMessage');
+            if (!text || text.trim().length < 1) return;
+            self.socket.emit('chat-message', {
+                name: name,
+                text: text
+            });
+           self.ractive.set('chatMessage', '');
+        });
+        
+        
+        this.socket.on('chat-message', function(message) {
+            self.ractive.push('messages', message);
+        });
+        
+        this.socket.emit('chat-message', {
+            name: this.ractive.get('myname'),
+            text:'HI I AM CONNECTED NOW'
         });
     }
     
@@ -29,7 +55,8 @@ var ChatView = (function() {
 
 var View = (function() {
     function View() {
-        this.chatView = new ChatView();
+        var socket = io();
+        this.chatView = new ChatView(socket);
         console.log('Main view initialized!');
     }
     

@@ -32,6 +32,13 @@ app.get('/', function(req, res) {
 
 io.on('connection', function(socket) {
     console.log('Some fucker connected!');
+    socket.on('chat-message', function(message) {
+        io.emit('chat-message', message);
+    });
+});
+
+io.on('connection', function(socket) {
+    console.log('Some fucker connected!');
 });
 
 // Starting the server
