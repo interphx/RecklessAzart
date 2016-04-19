@@ -1,0 +1,43 @@
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>{{#block 'title'}}TITLE UNDEFINED{{/block}}</title>
+	<link rel="stylesheet" href"assets/css/normalize.css" />
+	<link rel="stylesheet" href"assets/css/main.css" />
+</head>
+
+<body>
+	{{#block 'clientTemplates'}}
+		{{#each clientTemplates}}
+			<script type="text/x-template" data-define-template="{{name}}">
+			{{{text}}}
+			</script>
+		{{/each}}
+	{{/block}}
+
+	{{#block 'page'}}
+	<div class="main">
+		<div class="top-panel">
+			{{#block 'topPanel'}}
+			Проиграйжопу v0.1 (dev)
+			{{/block}}
+		</div>
+		<div class="left-panel">
+			{{#block 'leftPanel'}}
+			{{>chat}}
+			{{/block}}
+		</div>
+		<div class="right-panel">
+			{{#block 'rightPanel'}}
+			{{/block}}
+		</div>
+	</div>
+	{{/block}}
+	
+	{{#block 'scripts'}}
+	<script src="/assets/js/jquery.min.js"></script>
+	<script src="/assets/js/ractive-legacy.min.js"></script>
+	<script src="/assets/js/app.js"></script>
+	{{/block}}
+</body>
+</html>
