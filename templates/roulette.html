@@ -1,0 +1,10 @@
+<div class="roulette">
+	<input type="button" value="Get free money (100)" on-click="getFreeMoney">
+	<div class="roulette__balance">Balance: {{ user.balance }}</div>
+	<div class="roulette_result">Result: {{ rollResult }} Msg: {{ resultMessage }}</div>
+	<div class="roulette_bets">
+		<input type="button" data-bet-type="0" value="1-18" on-click="bet">
+		<input type="button" data-bet-type="1" value="19-35" on-click="bet">
+		<input type="button" data-bet-type="2" value="0" on-click="bet">
+	</div>
+</div>

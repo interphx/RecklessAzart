@@ -160,7 +160,40 @@ io.on('connection', function(socket) {
             text: message.text
         });
     });
+    socket.on('add-balance', function() {
+        if (!socket.request.user.logged_in) return;
+        console.log('Free money requested by ' + socket.request.user.name);
+        socket.request.user.deposit(100);
+        socket.request.user.persist();
+        socket.emit('data', { user: {balance: socket.request.user.balance} });
+    });
+    
+    socket.on('bet', function(bet) {
+        if (!socket.request.user.logged_in) return;
+        console.log('Bet made by by ' + socket.request.user.name + '! Rolling...');
+        var roll_result = Math.floor(Math.random() * 38);
+        console.log('Rolled ' + roll_result);
+        io.emit('roll-result', roll_result);
+        
+        var bet_type = bet.type;
+        var bet_amount = bet.amount;
+        
+        var win = (bet_type === 0 && roll_result >= 1 && roll_result <= 18) ||
+                    (bet_type === 1 && roll_result >= 19 && roll_result <= 35) ||
+                    (bet_type === 2 && roll_result === 0);
+        if (win && bet_type === 2) {
+            socket.request.user.deposit(bet.amount * 14);
+        } else if (win) {
+            socket.request.user.deposit(bet.amount);
+        } else {
+            socket.request.user.deposit(-bet.amount);
+        }
+        socket.request.user.persist();
+        socket.emit('data', { user: {balance: socket.request.user.balance} });
+    });
 });
+
+
 
 
 // Starting the server
