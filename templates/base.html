@@ -7,6 +7,10 @@
 </head>
 
 <body>
+	<script>
+		var DATA = JSON.parse('{{{jsonify $clientData}}}');
+	</script>
+
 	{{#block 'clientTemplates'}}
 		{{#each clientTemplates}}
 			<script type="text/x-template" data-define-template="{{name}}">

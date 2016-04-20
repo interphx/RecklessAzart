@@ -6,7 +6,7 @@
 		</div>
 	{{/each}}
 	<div class="chat-form">
-		<input type="text" value="{{myname}}" class="chat-form__name">
+		<span class="chat-form__name">{{me.name}}</span>
 		<input type="text" value="{{chatMessage}}" class="chat-form__text">
 		<input type="button" on-click="chatSend" class="chat-form__submit">
 	</div>

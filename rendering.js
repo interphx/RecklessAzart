@@ -6,6 +6,9 @@ var hbs = (function() {
     var hblayouts = require('handlebars-layouts');
     
     handlebars.registerHelper(hblayouts(handlebars));
+    handlebars.registerHelper('jsonify', function(context) {
+        return JSON.stringify(context);
+    });
     
     var walkSync = require('./util').walkSync;
     var files = walkSync(__dirname + '/templates');

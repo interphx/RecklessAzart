@@ -1,19 +1,104 @@
 // Engines and libraries initialization
 var fs = require('fs');
 var express = require('express');
+var expressSession = require('express-session');
+var passport = require('passport');
+var passportSocketIo = require('passport.socketio');
+var LocalStrategy = require('passport-local').Strategy;
 var app = express();
-
-var renderTemplate = require('./rendering').renderTemplate;
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+
+var User = require('./models').User;
+
+passport.use(new LocalStrategy(
+    { passReqToCallback: true },
+    function(req, username, password, cb) {
+        console.log('Auth attempt: ', username, password);
+        User.findOne({name: username}, function(err, user) {
+            if (err) cb(err);
+            if (!user) {console.log('No such user: ', username); return cb(null, false); }
+            if (user.password !== password) { console.log('Invalid password: ', password); return cb(null, false); }
+            return cb(null, user);
+        });
+    }
+));
+
+passport.serializeUser(function(user, cb) {
+    cb(null, user._id);
+});
+
+passport.deserializeUser(function(id, cb) {
+    User.findOne({ _id: id }, function(err, user) {
+        if (err) { return cb(err); }
+        if (!user) {
+            console.log('No user found!');
+            cb(null, false);
+        } else {
+            cb(null, user);
+        }
+    });
+});
+
+// Utility functions
 
 function rootpath(path) {
     return __dirname + '/' + path;
 }
 
+var renderTemplate = require('./rendering').renderTemplate;
+
+
+// Initializing sessions
+
+var NedbStore = require('nedb-session-store')(expressSession);
+
+var sessionSecret = 'stopmysickheadblossommouthassinyourwompywhistlyabdomen';
+var sessionStore = new NedbStore({
+    filename: __dirname + '/database/session_store.db'
+});
+var sessionMiddleware = expressSession({
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    /*cookie: {
+        path: '/',
+        maxAge: 365 * 24 * 60 * 60 * 1000
+    },*/
+    store: sessionStore
+});
+
+app.use(sessionMiddleware);
+
+app.use(require('body-parser').urlencoded({ extended: false }));
+var cookieParser = require('cookie-parser')();
+app.use(cookieParser);
+app.use(passport.initialize());
+app.use(passport.session());
+
+io.use(passportSocketIo.authorize({
+    cookieParser: require('cookie-parser'),
+    key: 'connect.sid',
+    secret: sessionSecret,
+    store: sessionStore,
+    success: function(data, accept) { console.log('Successful auth through socket.io!'); accept(); },
+    fail: function(data, message, error, accept) {
+        if (error) throw new Error(message);
+        accept();
+        console.log('Failed socket.io auth: ', message);
+        if (error) {
+            accept(new Error(message));
+        }
+    }
+}));
+
+/*
+io.use(function(socket, next) {
+    sessionMiddleware(socket.request, socket.request.res, next);
+});*/
+
 // Initializing front-end serving
-console.log(rootpath('static'));
 app.use(express.static(rootpath('static')));
 
 app.get('/', function(req, res) {
@@ -24,25 +109,62 @@ app.get('/', function(req, res) {
             {name: 'adolf', text: 'lol'},
             {name: 'adolf', text: 'go play dota komrads'},
             {name: 'adolf', text: 'sorry bad english'},
-        ]
+        ],
+        $clientData: {
+            user: req.user.getClientSideData()
+        }
     }));
 });
+
+app.get('/forbidden', function(req, res) {
+    res.send('Forbidden. Please authorize via /login/username/password');
+});
+
+app.get('/admin',
+    function(req, res) {
+        if(req.user) {
+            res.send('Woohoo, you are viewving this page as ' + req.user.name);
+        } else {
+            res.send('Admin panel: Please authorize via /login/username/password');
+        }
+    }
+);
+
+app.get('/login',
+    function(req, res) {
+        res.send('<form method="POST">Username:<input type="text" name="username">Password<input type="text" name="password"><input type="submit"></form>');
+    }
+);
+
+app.post('/login',
+    function(req, res, next) {
+        next();
+    },
+    passport.authenticate('local', { failureRedirect: '/forbidden' }),
+    function(req, res) {
+        res.redirect('/admin');
+    }
+);
 
 // Initializing sockets
 
 io.on('connection', function(socket) {
-    console.log('Some fucker connected!');
+    console.log('Some fucker connected: ', socket.id);
     socket.on('chat-message', function(message) {
-        io.emit('chat-message', message);
+        if (!socket.request || !socket.request.user) {
+            console.log('Something is wrong: we\'ve got request with no "user" property');
+        }
+        if (!socket.request.user.logged_in) return;
+        io.emit('chat-message', {
+            name: socket.request.user.name,
+            text: message.text
+        });
     });
 });
 
-io.on('connection', function(socket) {
-    console.log('Some fucker connected!');
-});
 
 // Starting the server
 
 http.listen(80, function() {
-    console.log('Listening on port 3000...');
+    console.log('Listening on port 80...');
 });

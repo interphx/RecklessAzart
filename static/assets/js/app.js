@@ -22,18 +22,16 @@ var ChatView = (function() {
             partials: loaded_templates,
             template: getTemplate('chat'),
             data: {
-                myname: 'user' + ((Math.random() * 100500) | 0),
+                me: DATA.user,
                 chatMessage: '',
                 messages: []
             }
         });
         
         this.ractive.on('chatSend', function() {
-            var name = self.ractive.get('myname');
             var text = self.ractive.get('chatMessage');
             if (!text || text.trim().length < 1) return;
             self.socket.emit('chat-message', {
-                name: name,
                 text: text
             });
            self.ractive.set('chatMessage', '');
