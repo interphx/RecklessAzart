@@ -194,7 +194,7 @@ io.on('connection', function(socket) {
 });
 
 
-
+require('./steam');
 
 // Starting the server
 
