@@ -23,6 +23,8 @@
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.6.1",
     "socket.io": "^1.4.5",
-    "steam": "^1.4.0"
+    "steam": "^1.4.0",
+    "steam-tradeoffer-manager": "^1.22.2",
+    "steam-user": "^3.3.4"
   }
 }

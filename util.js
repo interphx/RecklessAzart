@@ -1,6 +1,16 @@
 var fs = require('fs');
 var path = require('path');
 
+var now = function() {
+    return Date.now();
+};
+
+var camelCaseToUnderscore = function(s) {
+    return s.replace(/\.?([A-Z]+)/g, function (x, y){
+        return "_" + y.toLowerCase()
+    }).replace(/^_/, "")
+};
+
 var shallowMerge = function(objects) {
     var result = {};
     for (var i = 0; i < objects.length; ++i) {
@@ -11,7 +21,7 @@ var shallowMerge = function(objects) {
         }
     }
     return result;
-}
+};
 
 var walkSync = function(dir) {
     var path = require('path');
@@ -33,6 +43,9 @@ var walkSync = function(dir) {
 };
 
 module.exports = {
+    now: now,
     walkSync: walkSync,
-    shallowMerge: shallowMerge
+    shallowMerge: shallowMerge,
+    camelCaseToUnderscore: camelCaseToUnderscore,
+    noop: function() {}
 };

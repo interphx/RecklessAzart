@@ -10,6 +10,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+var config = require('./config');
 var User = require('./models').User;
 
 passport.use(new LocalStrategy(
@@ -54,7 +55,7 @@ var renderTemplate = require('./rendering').renderTemplate;
 
 var NedbStore = require('nedb-session-store')(expressSession);
 
-var sessionSecret = 'stopmysickheadblossommouthassinyourwompywhistlyabdomen';
+var sessionSecret = config.secret;
 var sessionStore = new NedbStore({
     filename: __dirname + '/database/session_store.db'
 });
@@ -102,18 +103,14 @@ io.use(function(socket, next) {
 app.use(express.static(rootpath('static')));
 
 app.get('/', function(req, res) {
-    res.send(renderTemplate('index', {
-        messages: [
-            {name: 'foo', text: 'bar!'},
-            {name: 'Jesus', text: 'amen'},
-            {name: 'adolf', text: 'lol'},
-            {name: 'adolf', text: 'go play dota komrads'},
-            {name: 'adolf', text: 'sorry bad english'},
-        ],
-        $clientData: {
-            user: req.user.getClientSideData()
-        }
-    }));
+    chatServer.fetchLatest(function(err, results) {
+        res.send(renderTemplate('index', {
+            messages: results,
+            $clientData: {
+                user: req.user.logged_in ? req.user.getClientSideData() : { name: 'Anonymous', balance: 0, roles: ['guest'] }
+            }
+        }));
+    });
 });
 
 app.get('/forbidden', function(req, res) {
@@ -148,9 +145,16 @@ app.post('/login',
 
 // Initializing sockets
 
+var ChatServer = require('./chat').ChatServer;
+
+var chatServer = new ChatServer({
+    io: io,
+    latestCount: config.chat.latestCount || 7
+});
+
 io.on('connection', function(socket) {
     console.log('Some fucker connected: ', socket.id);
-    socket.on('chat-message', function(message) {
+    /*socket.on('chat-message', function(message) {
         if (!socket.request || !socket.request.user) {
             console.log('Something is wrong: we\'ve got request with no "user" property');
         }
@@ -159,7 +163,7 @@ io.on('connection', function(socket) {
             name: socket.request.user.name,
             text: message.text
         });
-    });
+    });*/
     socket.on('add-balance', function() {
         if (!socket.request.user.logged_in) return;
         console.log('Free money requested by ' + socket.request.user.name);
@@ -194,7 +198,7 @@ io.on('connection', function(socket) {
 });
 
 
-require('./steam');
+var lord = require('./steam').overlord;
 
 // Starting the server
 

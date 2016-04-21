@@ -21,7 +21,7 @@ var hbs = (function() {
         var file_contents = fs.readFileSync(filename, {encoding: 'utf-8'});
         var basename = path.basename(filename);
         var template_name = basename.substr(0, basename.lastIndexOf('.')) || basename;
-        console.log(template_name);
+        //console.log(template_name);
         handlebars.registerPartial(template_name, file_contents);
         loaded_templates[template_name] = file_contents;
         compiled_templates[template_name] = handlebars.compile(file_contents);

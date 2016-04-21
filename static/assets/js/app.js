@@ -1,15 +1,34 @@
-var loaded_templates = {};
-$('[data-define-template]').each(function() {
-    var $this = $(this);
-    var template_name = $this.attr('data-define-template');
-    var template_text = $this.html();
-    loaded_templates[template_name] = template_text;
-});
+/*var ChatClient = (function() {
+    function ChatClient() {
+        
+    }
+    
+    ChatClient.prototype = {
+        constructor: ChatClient
+    }
+    
+    return ChatClient;
+})();*/
 
-function getTemplate(template_name) {
-    //return $('script[data-define-template=' + template_name + ']').html();
-    return loaded_templates[template_name];
-}
+var getTemplate = (function() {
+    var loaded_templates = {};
+    $('[data-define-template]').each(function() {
+        var $this = $(this);
+        var template_name = $this.attr('data-define-template');
+        var template_text = $this.html();
+        loaded_templates[template_name] = template_text;
+    });
+
+    function getTemplate(template_name) {
+        return loaded_templates[template_name];
+    }
+    
+    getTemplate.loadedTemplates = loaded_templates;
+    
+    return getTemplate;
+})();
+
+var loaded_templates = getTemplate.loaded_templates;
 
 var ChatView = (function() {
     function ChatView(socket) {
@@ -29,6 +48,7 @@ var ChatView = (function() {
         });
         
         this.ractive.on('chatSend', function() {
+            console.log('Sending to chat...');
             var text = self.ractive.get('chatMessage');
             if (!text || text.trim().length < 1) return;
             self.socket.emit('chat-message', {
@@ -38,13 +58,12 @@ var ChatView = (function() {
         });
         
         
-        this.socket.on('chat-message', function(message) {
-            self.ractive.push('messages', message);
+        this.socket.on('chat-messages', function(messages) {
+            self.ractive.set('messages', self.ractive.get('messages').concat(messages));
         });
         
         this.socket.emit('chat-message', {
-            name: this.ractive.get('myname'),
-            text:'HI I AM CONNECTED NOW'
+            text:'hi guts'
         });
     }
     
