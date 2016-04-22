@@ -1,13 +1,13 @@
 <div class="chat">
-	Chat
+	<ul class="chat-messages">
 	{{#each messages}}
-		<div class="chat-message">
+		<li class="chat-message">
 			<span class="chat-message__name">{{authorName}}</span>: <span class="chat-message__text">{{text}}</span>
-		</div>
+		</li>
 	{{/each}}
-	<div class="chat-form">
-		<span class="chat-form__name">{{me.name}}</span>
-		<input type="text" value="{{chatMessage}}" class="chat-form__text">
-		<input type="button" on-click="chatSend" class="chat-form__submit">
+	</ul>
+	<div class="chat-form pure-form">
+		<input type="text" value="{{chatMessage}}" on-enter="chatSend" placeholder="Введите текст сообщения..." class="chat-form__text">
+		<!--<input type="button" on-click="chatSend" class="chat-form__submit" value="Отправить">-->
 	</div>
 </div>

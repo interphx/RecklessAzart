@@ -1,0 +1,99 @@
+a {
+	text-decoration: none;
+}
+a:hover {
+	color: #ef3939;
+}
+
+.panel {
+	margin: 0.5em;
+	padding: 1em;
+	background: #eee;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.top-panel {
+	width: 100%;
+	overflow: auto;
+	border-bottom: 1px solid blue;
+}
+
+.left-panel {
+	width: 25%;
+	height: 100%;
+	float: left;
+	border-right: 1px solid red;
+}
+
+.right-panel {
+	float: left;
+	width: 74%;
+	height: 100%;
+	border: 1px solid green;
+}
+
+.logo {
+	width: 25%;
+	/*height: 64px;*/
+	text-align: center;
+	padding-top: 0.25em;
+	font-size: 1.6em;
+	float: left;
+}
+
+.tabs {
+	/*display: table-row;*/
+	/*list-style: none;
+	padding: 0;
+	margin: 0;*/
+}
+
+.tabs__tab {
+	/*list-style: none;
+	display: table;
+	float: left;
+	height: 4em;
+	text-align: center;
+	white-space: normal;
+	max-width: 13em;*/
+	font-family: Verdana, Arial, sans-serif;
+	letter-spacing: 0;
+}
+
+.tabs__tab:not(:last-child) {
+	/*border-right: 1px solid #999;*/
+}
+
+.tabs__link {
+	/*display: table-cell;
+	height: 100%;
+	vertical-align: middle;
+	*/
+	color: #333;
+	font-size: 1.2em;
+	font-family: Verdana, Arial, sans-serif;
+	text-decoration: none;
+}
+
+.tabs__link:visited:not(:hover) {
+	color: #333;
+}
+
+/* CHAT */
+
+.chat-messages {
+	list-style: none;
+	margin: 0 0 0.5em 0.5em;
+	padding: 0.5em;
+	height: 500px;
+}
+
+.chat-form {
+	padding: 0.5em;
+	background: #eee;
+}
+
+.chat-form__text {
+	width: 100%;
+}

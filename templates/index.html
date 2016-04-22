@@ -2,7 +2,17 @@
 
 {{#content 'title'}}Main Page (overridden){{/content}}
 
-{{#content 'topPanel'}}Main Page panel (overridden){{/content}}
+{{#content 'topPanel'}}
+<div class="logo pure-u-1 pure-u-md-1-4">Рулеточка</div>
+<div class="pure-menu pure-menu-horizontal pure-u-1 pure-u-md-3-4">
+	<ul class="tabs pure-menu-list">
+		<li class="tabs__tab pure-menu-item"><a class="tabs__link pure-menu-link" href="#">Рулетка</a></li>
+		<li class="tabs__tab pure-menu-item"><a class="tabs__link pure-menu-link" href="#">Получить очки</a></li>
+		<li class="tabs__tab pure-menu-item"><a class="tabs__link pure-menu-link" href="#">Получить предметы</a></li>
+		<li class="tabs__tab pure-menu-item"><a class="tabs__link pure-menu-link" href="#">FAQ</a></li>
+	</ul>
+</div>
+{{/content}}
 
 {{#content 'rightPanel'}} {{>roulette}} {{/content}}
 

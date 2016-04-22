@@ -1,8 +1,21 @@
 <div class="roulette">
 	<input type="button" value="Get free money (100)" on-click="getFreeMoney">
 	<div class="roulette__balance">Balance: {{ user.balance }}</div>
-	<div class="roulette_result">Result: {{ rollResult }} Msg: {{ resultMessage }}</div>
-	<div class="roulette_bets">
+	<div class="roulette__result">Result: {{ rollResult }} Msg: {{ resultMessage }}</div>
+	<div class="roulette__bets panel">
+		<div class="roulette__balance">Ваши очки: {{ user.balance }}</div>
+		<div class="roulette__bet-controls">
+			<span>Ставка:</span>
+			<button class="pure-button">Очистить</button>
+			<button class="pure-button">Последняя ставка</button>
+			<button class="pure-button">+1</button>
+			<button class="pure-button">+10</button>
+			<button class="pure-button">+100</button>
+			<button class="pure-button">+1000</button>
+			<button class="pure-button">1/2</button>
+			<button class="pure-button">Максимум</button>
+		</div>
+		<input type="text" class="roulette__bet" value="0">
 		<input type="button" data-bet-type="0" value="1-18" on-click="bet">
 		<input type="button" data-bet-type="1" value="19-35" on-click="bet">
 		<input type="button" data-bet-type="2" value="0" on-click="bet">

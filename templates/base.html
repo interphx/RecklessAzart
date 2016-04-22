@@ -1,9 +1,17 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8" />
 	<title>{{#block 'title'}}TITLE UNDEFINED{{/block}}</title>
-	<link rel="stylesheet" href"assets/css/normalize.css" />
-	<link rel="stylesheet" href"assets/css/main.css" />
+	<link rel="stylesheet" href="assets/css/normalize.css" />
+	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+	<!--[if lte IE 8]>
+		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-old-ie-min.css">
+	<![endif]-->
+	<!--[if gt IE 8]><!-->
+		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-min.css">
+	<!--<![endif]-->
+	<link rel="stylesheet" href="assets/css/main.css" />
 </head>
 
 <body>
@@ -21,7 +29,7 @@
 
 	{{#block 'page'}}
 	<div class="main">
-		<div class="top-panel">
+		<div class="top-panel pure-g">
 			{{#block 'topPanel'}}
 			Проиграйжопу v0.1 (dev)
 			{{/block}}
@@ -41,6 +49,7 @@
 	{{#block 'scripts'}}
 	<script src="/assets/js/jquery.min.js"></script>
 	<script src="/assets/js/ractive-legacy.min.js"></script>
+	<script src="/assets/js/ractive-events-keys.min.js"></script>
 	<!--This is fucked up, switch to file-->
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/assets/js/app.js"></script>

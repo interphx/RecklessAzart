@@ -103,14 +103,14 @@ io.use(function(socket, next) {
 app.use(express.static(rootpath('static')));
 
 app.get('/', function(req, res) {
-    chatServer.fetchLatest(function(err, results) {
+    //chatServer.fetchLatest(function(err, results) {
         res.send(renderTemplate('index', {
-            messages: results,
+            messages: [],
             $clientData: {
                 user: req.user.logged_in ? req.user.getClientSideData() : { name: 'Anonymous', balance: 0, roles: ['guest'] }
             }
         }));
-    });
+    //});
 });
 
 app.get('/forbidden', function(req, res) {
