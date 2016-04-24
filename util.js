@@ -1,5 +1,28 @@
 var fs = require('fs');
 var path = require('path');
+var mkdirp = require('mkdirp');
+
+function getLocalPath(p) {
+    return path.join(global.appRoot || __dirname, p);
+}
+
+function writeLocalFile(p, contents, encoding, cb) {
+    p = path.join(__dirname, p);
+    mkdirp(path.dirname(path.resolve(p)), function(err) {
+        if (err) {
+            cb(err);
+        } else {
+            fs.writeFile(path.resolve(p), contents, encoding, cb);
+        }
+    });
+}
+
+function readLocalFile(p, opts, cb) {
+    p = path.join(__dirname, p);
+    fs.exists(p, opts, function(err, data) {
+        cb(err, data);
+    });
+}
 
 var now = function() {
     return Date.now();

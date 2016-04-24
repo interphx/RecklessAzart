@@ -1,23 +1,35 @@
 <div class="roulette">
 	<input type="button" value="Get free money (100)" on-click="getFreeMoney">
-	<div class="roulette__balance">Balance: {{ user.balance }}</div>
+	<div class="roulette__balance">Balance: {{ me.balance }}</div>
 	<div class="roulette__result">Result: {{ rollResult }} Msg: {{ resultMessage }}</div>
-	<div class="roulette__bets panel">
-		<div class="roulette__balance">Ваши очки: {{ user.balance }}</div>
+	<div class="roulette__betting panel">
+        <div class="roulette__info">
+            <div class="roulette__balance bigtext">Ваш баланс: {{ me.balance }}</div>
+        </div>
 		<div class="roulette__bet-controls">
-			<span>Ставка:</span>
-			<button class="pure-button">Очистить</button>
-			<button class="pure-button">Последняя ставка</button>
-			<button class="pure-button">+1</button>
-			<button class="pure-button">+10</button>
-			<button class="pure-button">+100</button>
-			<button class="pure-button">+1000</button>
-			<button class="pure-button">1/2</button>
-			<button class="pure-button">Максимум</button>
+			<div class="bigtext">Укажите сумму ставки:</div>
+            <div class="btn-group btn-group-divided">
+                <button class="pure-button btn">Очистить</button>
+                <button class="pure-button btn">Последняя ставка</button>
+                <button class="pure-button btn">+1</button>
+                <button class="pure-button btn">+10</button>
+                <button class="pure-button btn">+100</button>
+                <button class="pure-button btn">+1000</button>
+                <button class="pure-button btn">1/2</button>
+                <button class="pure-button btn">Максимум</button>
+            </div>
+            <div class="roulette__bet-sum">
+                <input type="text" class="postfixed" value="0"><span class="postfix">очков</span>
+            </div>
+            <div class="bigtext">Сделайте ставку (отменить ставку нельзя!)</div>
+            <div class="roulette__bets">
+                <div class="btn-group btn-group-divided btn-group-inline">
+                    <button class="pure-button btn btn-bet btn-bet-red" on-click="bet" data-bet-type="0">1 - 18</button>
+                    <button class="pure-button btn btn-bet btn-bet-zero" on-click="bet" data-bet-type="2">0</button>
+                    <button class="pure-button btn btn-bet btn-bet-black" on-click="bet" data-bet-type="1">19 - 36</button>
+                </div>
+            </div>
 		</div>
-		<input type="text" class="roulette__bet" value="0">
-		<input type="button" data-bet-type="0" value="1-18" on-click="bet">
-		<input type="button" data-bet-type="1" value="19-35" on-click="bet">
-		<input type="button" data-bet-type="2" value="0" on-click="bet">
+        <div class="bigtext">Вы узнаете свой результат после следующего вращения рулетки (через ... секунд)</div>
 	</div>
 </div>

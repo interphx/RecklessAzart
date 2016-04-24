@@ -104,10 +104,13 @@ app.use(express.static(rootpath('static')));
 
 app.get('/', function(req, res) {
     //chatServer.fetchLatest(function(err, results) {
+        if (!req.user.getClientSideData) {
+            console.log('Weird user object: ', req.user);
+        }
         res.send(renderTemplate('index', {
             messages: [],
             $clientData: {
-                user: req.user.logged_in ? req.user.getClientSideData() : { name: 'Anonymous', balance: 0, roles: ['guest'] }
+                user: (req.user && req.user.logged_in && req.user.getClientSideData) ? req.user.getClientSideData() : { name: 'Anonymous', balance: 0, roles: ['guest'] }
             }
         }));
     //});

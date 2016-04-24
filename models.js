@@ -163,6 +163,8 @@ var SteamData = {
 
 var SteamUser = require('steam-user');
 var TradeOfferManager = require('steam-tradeoffer-manager');
+var SteamCommunity = require('steamcommunity');
+var SteamTOTP = require('steam-totp');
 
 var models = {
     User: createModel('User', {
@@ -190,7 +192,13 @@ var models = {
             username: undefined,
             password: undefined,
             guardCode: undefined,
-            email: undefined
+            email: undefined,
+            use2FA: undefined,
+            twoFactorEnabled: undefined,
+            sharedSecret2FA: undefined,
+            identitySecret2FA: undefined,
+            revocationCode2FA: undefined,
+            activationCode2FA: undefined            
         },
         static: {
             Status: {
@@ -210,6 +218,7 @@ var models = {
                     pollInterval: config.tradeOffers.pollInterval,
                     cancelTime: config.tradeOffers.cancelTime
                 });
+                this._steamcommunity = new SteamCommunity();               
                 
                 fs.readFile(__dirname + '/database/steam-tradeoffer-manager/polldata.json', function(err, data) {
                     if (err) {
@@ -233,12 +242,65 @@ var models = {
                 
                 this._offers.on('pollFailure', this.onTradeOffersPollFailure.bind(this));
                 this._offers.on('pollData', this.onTradeOffersPollData.bind(this));
+                this._offers.on('newOffer', this.onTradeOffersNewOffer.bind(this));
+                this._offers.on('receivedOfferChanged', this.onTradeOfferReceivedOfferChanged.bind(this));
+                
+                this._steamcommunity.on('confKeyNeeded', this.onCommunityConfKeyNeeded.bind(this));
+            },
+            onCommunityConfKeyNeeded: function(tag, callback) {
+                var time = Math.floor(Data.now() / 1000);
+                if (this.twoFactorEnabled) {
+                    callback(null, time, SteamTOTP.getConfirmationKey(this.identitySecret2FA, time, tag));
+                } else {
+                    callback(new Error('Unable to generate confirmation key: twoFactorEnabled is false'));
+                }
             },
             onTradeOffersPollData: function(data) {
                 fs.writeFile(__dirname + '/database/steam-trade-offers/polldata.json', JSON.stringify(data));
             },
             onTradeOffersPollFailure: function(err) {
                 console.log('Error polling trade offers: ', err);
+            },
+            onTradeOffersNewOffer: function(offer) {
+                console.log('New offer #', offer.id ,', partner: ', offer.partner.getSteam3RenderedID());
+                if (offer.message) {
+                    console.log('Offer message: ', offer.message);
+                }
+                
+                // TODO: Check: if offer.itemsToGive.length > 0, second party must be admin or have rights for these items
+                if (offer.isGlitched() || !offer.isOurOffer) {
+                    console.log('Got glitched offer! Declining.');
+                    offer.decline(function(err) {
+                        if (err) { console.log('Failed to decline offer: ', err); } else {
+                            console.log('Offer declined!');
+                        }
+                    });
+                } else {
+                    offer.accept(true, function(err, status) {
+                        if (err) {
+                            console.log('Error while accepting TradeOffer: ', err);
+                        } else {
+                            console.log('Accepting offer, status: ', status);
+                        }
+                    });
+                }
+            },
+            onTradeOfferReceivedOfferChanged: function(offer, oldState) {
+                console.log("Offer #" + offer.id + " changed: " + TradeOfferManager.getStateName(oldState) + " -> " + TradeOfferManager.getStateName(offer.state));
+
+                if (offer.state == TradeOfferManager.ETradeOfferState.Accepted) {
+                    offer.getReceivedItems(function(err, items) {
+                        if (err) {
+                            console.log("Couldn't get received items: " + err);
+                        } else {
+                            var names = items.map(function(item) {
+                                return item.name;
+                            });
+
+                            console.log("Received: [" + names.join(', ') + "]");
+                        }
+                    });
+                }
             },
             onLoggedOn: function(details) {
                 console.log('Logged into Steam as ' + this._client.steamID.getSteam3RenderedID());
@@ -254,16 +316,74 @@ var models = {
                 console.log(err);
                 process.exit(1);
             },
+            enable2FA: function() {
+                var self = this;
+                if (!this.twoFactorEnabled && !this.activationCode2FA) {
+                    this._client.enableTwoFactor(function(response) {
+                        try {
+                            console.log('Got enable2fa response!');
+                            console.log(JSON.stringify(response));
+                            fs.writeFileSync(__dirname + 'response_' + (Math.random() * 100000).toString() + '.txt', JSON.stringify(response), 'utf8');
+                        } catch(e) {
+                            console.log('Error while trying to display enbale2fa response');
+                            console.log(response);
+                        }
+                        
+                        if (response.status !== SteamUser.Steam.EResult.OK) {
+                            console.log('ERROR: Enabling 2FA failed: code = ', response.status);
+                        } else {
+                            self.sharedSecret2FA = response.shared_secret;
+                            if (response.identity_secret) {
+                                self.identitySecret2FA = response.identity_secret;
+                                console.log('Yay, got identity_secret from Steam: ', self.identitySecret2FA);
+                            } else {
+                                console.log('FUCK! Steam response doesnt contain identity_secret!');
+                            }
+                            self.revocationCode2FA = response.revocation_code;
+                            console.log('Enabling 2FA for ' + this._id + ' started. Please provide activationCode');
+                            self.persist();
+                        }
+                    });
+                } else if (!this.twoFactorEnabled && this.activationCode2FA) {
+                    if (!this.sharedSecret2FA) {
+                        console.log('WTF r u doin\' man? You provided activationCode2FA, but I have no shared secret!');
+                    } else {
+                        this._client.finalizeTwoFactor(this.sharedSecret2FA, this.activationCode2FA, function(err) {
+                            if (err) {
+                                console.log('ERROR: Unable to finalize 2FA enabling for ' + this._id);
+                                console.log(err);
+                            } else {
+                                self.twoFactorEnabled = true;
+                                console.log('Successfully enabled 2FA for ' + this._id);
+                                self.persist();
+                            }
+                        });
+                    }
+                }
+            },
             onWebSession: function(sessionID, cookies) {
                 console.log('Got web session');
+                var self = this;
                 this._client.setPersona(SteamUser.Steam.EPersonaState.Online);
+                this._steamcommunity.setCookies(cookies);
+                
+                if (this.twoFactorEnabled) {
+                    this._steamcommunity.startConfirmationChecker(15000, this.identitySecret2FA);
+                } else {
+                    console.log('I will not poll offers: I have no two-factor auth codes!');
+                }
+                
+                if (this.use2FA === 'enable' && !this.twoFactorEnabled) {
+                    this.enable2FA();
+                }
+                
                 this._offers.setCookies(cookies, function(err) {
                     if (err) {
                         console.log('ERROR: Unable to set trade offer cookies!');
                         console.log(err);
                         //process.exit(1);
                     } else {
-                        console.log('Trade offer cookies set. Got API key: ', this._offers.apiKey);
+                        console.log('Trade offer cookies set. Got API key: ', self._offers.apiKey);
                     }
                 });
             },
@@ -301,11 +421,15 @@ var models = {
                 if (this.isOnline()) return;
                 console.log('Logging in...');
                 console.log(this.username, this.password, this.guardCode);
-                this._client.logOn({
+                var logOnData = {
                     accountName: this.username,
                     password: this.password,
                     authCode: this.guardCode
-                });
+                };
+                if (this.twoFactorEnabled) {
+                    logOnData.twoFactorCode = SteamTOTP.getAuthCode(this.sharedSecret2FA);
+                }
+                this._client.logOn(logOnData);
             }
         }
     }),

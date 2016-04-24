@@ -1,3 +1,15 @@
+input[type=text], input[type=month], input[type=time], input[type=datetime], input[type=datetime-local], input[type=week], input[type=number], input[type=search], input[type=tel], input[type=color], select, textarea {
+    padding: .5em .6em;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 3px #ddd;
+    border-radius: 4px;
+    vertical-align: middle;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
 a {
 	text-decoration: none;
 }
@@ -5,10 +17,66 @@ a:hover {
 	color: #ef3939;
 }
 
+.bigtext {
+    font-size: 1.2em;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+.postfixed {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.postfix {
+    display: inline-block;
+    margin-left: 0;
+    background: #ddd;
+    border: 1px solid #ccc;
+    border-left: none;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    padding: 0.5em 0.6em;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.btn-group-inline {
+    display: inline-block;
+}
+
+.btn-group {
+    overflow: auto;
+}
+
+.btn-group .btn {
+    border-radius: 0;
+    float: left;
+}
+
+.btn-group .btn:not(:first-child):not(:last-child) {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.btn-group .btn:first-child {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.btn-group .btn:last-child {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.btn-group-divided .btn:not(:last-child) {
+    border-right: 1px solid #ccc;
+}
+
 .panel {
 	margin: 0.5em;
 	padding: 1em;
-	background: #eee;
+	background: #f8f8f8;
 	border: 1px solid #ddd;
 	border-radius: 4px;
 }
@@ -16,21 +84,24 @@ a:hover {
 .top-panel {
 	width: 100%;
 	overflow: auto;
-	border-bottom: 1px solid blue;
+	/*border-bottom: 1px solid blue;*/
+    background: #f8f8f8;
+    
+    border-bottom: 1px solid #ddd;
 }
 
 .left-panel {
 	width: 25%;
 	height: 100%;
 	float: left;
-	border-right: 1px solid red;
+	/*border-right: 1px solid red;*/
 }
 
 .right-panel {
 	float: left;
 	width: 74%;
 	height: 100%;
-	border: 1px solid green;
+	/*border: 1px solid green;*/
 }
 
 .logo {
@@ -80,6 +151,17 @@ a:hover {
 	color: #333;
 }
 
+.tabs__link:hover {
+	background: inherit !important;
+}
+
+.mainmenu-toggle {
+    float: right;
+    width: 1.2em;
+    height: 1.2em;
+    cursor: pointer;
+}
+
 /* CHAT */
 
 .chat-messages {
@@ -96,4 +178,37 @@ a:hover {
 
 .chat-form__text {
 	width: 100%;
+}
+
+/* ROULETTE */
+.btn-bet {
+    width: 5em;
+    color: white;
+    font-size: 1.6em;
+}
+
+.btn-bet-red {
+    background: #FF2222;
+}
+.btn-bet-zero {
+    background: green;
+}
+.btn-bet-black {
+    background: #222;
+}
+
+.roulette__bet-sum {
+    margin-top: 0.5em;
+}
+.roulette__info {
+    border-bottom: 1px solid #eee;
+}
+
+.roulette__balance {
+    margin-top: 0;
+}
+
+.roulette__bets {
+    text-align: left;
+    width: 100%;
 }

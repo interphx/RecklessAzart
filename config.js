@@ -6,7 +6,7 @@ module.exports = {
         cancelTime: 600 * 1000 // Отменяем все офферы старее 10 минут
     },
     overlord: {
-        lazyLogin: true
+        lazyLogin: false
     },
     chat: {
         latestCount: 7

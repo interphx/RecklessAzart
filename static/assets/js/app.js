@@ -40,6 +40,7 @@ var ChatView = (function() {
             el: this.$chat[0],
             partials: loaded_templates,
             template: getTemplate('chat'),
+            magic: true,
             data: {
                 me: DATA.user,
                 chatMessage: '',
@@ -80,6 +81,7 @@ var RouletteView = (function() {
             el: this.$roulette[0],
             partials: loaded_templates,
             template: getTemplate('roulette'),
+            magic: true,
             data: {
                 me: DATA.user,
                 betAmount: 0,
@@ -142,6 +144,8 @@ var View = (function() {
         
         this.chatView = new ChatView(socket);
         this.rouletteView = new RouletteView(socket);
+        window.chatView = this.chatView;
+        window.rouletteView = this.rouletteView;
         console.log('Main view initialized!');
     }
     
