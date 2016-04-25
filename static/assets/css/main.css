@@ -1,3 +1,7 @@
+html, body {
+    font-family: 'Open Sans', sans-serif;
+}
+
 input[type=text], input[type=month], input[type=time], input[type=datetime], input[type=datetime-local], input[type=week], input[type=number], input[type=search], input[type=tel], input[type=color], select, textarea {
     padding: .5em .6em;
     display: inline-block;
@@ -70,7 +74,21 @@ a:hover {
 }
 
 .btn-group-divided .btn:not(:last-child) {
-    border-right: 1px solid #ccc;
+    border-right: none;/*1px solid #ccc;*/
+}
+
+.btn, .pure-button {
+    background: transparent;
+    border: 1px solid #4d4d4d;
+}
+
+.btn:hover, .pure-button:hover {
+    background: #333;
+    color: #CCC;
+}
+
+.btn:focus, .pure-button:focus {
+    background-image: none;
 }
 
 .panel {
@@ -128,7 +146,8 @@ a:hover {
 	text-align: center;
 	white-space: normal;
 	max-width: 13em;*/
-	font-family: Verdana, Arial, sans-serif;
+	/*font-family: Verdana, Arial, sans-serif;*/
+    font-family: 'Open Sans', sans-serif;
 	letter-spacing: 0;
 }
 
@@ -143,7 +162,7 @@ a:hover {
 	*/
 	color: #333;
 	font-size: 1.2em;
-	font-family: Verdana, Arial, sans-serif;
+	/*font-family: Verdana, Arial, sans-serif;*/
 	text-decoration: none;
 }
 
