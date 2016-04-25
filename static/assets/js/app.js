@@ -34,10 +34,10 @@ var ChatView = (function() {
     function ChatView(socket) {
         var self = this;
         
-        this.$chat = $('.chat');
+        this.$container = $('.left-panel');
         this.socket = socket;
         this.ractive = new Ractive({
-            el: this.$chat[0],
+            el: this.$container[0],
             partials: loaded_templates,
             template: getTemplate('chat'),
             magic: true,
@@ -75,10 +75,10 @@ var RouletteView = (function() {
     function RouletteView(socket) {
         var self = this;
         
-        this.$roulette = $('.roulette');
+        this.$container = $('.right-panel');
         this.socket = socket;
         this.ractive = new Ractive({
-            el: this.$roulette[0],
+            el: this.$container[0],
             partials: loaded_templates,
             template: getTemplate('roulette'),
             magic: true,

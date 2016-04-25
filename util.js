@@ -70,5 +70,8 @@ module.exports = {
     walkSync: walkSync,
     shallowMerge: shallowMerge,
     camelCaseToUnderscore: camelCaseToUnderscore,
-    noop: function() {}
+    noop: function() {},
+    getLocalPath: getLocalPath,
+    writeLocalFile: writeLocalFile,
+    readLocalFile: readLocalFile
 };

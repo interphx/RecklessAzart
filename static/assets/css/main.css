@@ -1,5 +1,6 @@
 html, body {
     font-family: 'Open Sans', sans-serif;
+	color: #3F3F3F;
 }
 
 input[type=text], input[type=month], input[type=time], input[type=datetime], input[type=datetime-local], input[type=week], input[type=number], input[type=search], input[type=tel], input[type=color], select, textarea {
@@ -17,14 +18,46 @@ input[type=text], input[type=month], input[type=time], input[type=datetime], inp
 a {
 	text-decoration: none;
 }
+
 a:hover {
 	color: #ef3939;
 }
 
-.bigtext {
+.promobox {
+	width: 32em;
+	max-width: 100%;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.promotext {
+	font-size: 1.2em;
+}
+
+.promotext a, .promotext a:visited {
+	color: #009;
+}
+
+.promotext a:hover {
+	text-decoration: underline;
+}
+
+.instruction {
     font-size: 1.2em;
     margin-top: 1em;
     margin-bottom: 0.5em;
+}
+
+.hint {
+	color: #777;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.centered {
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .postfixed {
@@ -45,6 +78,10 @@ a:hover {
     vertical-align: middle;
 }
 
+.pure-button {
+	border-radius: 4px;
+}
+
 .btn-group-inline {
     display: inline-block;
 }
@@ -53,41 +90,41 @@ a:hover {
     overflow: auto;
 }
 
-.btn-group .btn {
+.btn-group .pure-button {
     border-radius: 0;
     float: left;
 }
 
-.btn-group .btn:not(:first-child):not(:last-child) {
+.btn-group .pure-button:not(:first-child):not(:last-child) {
     margin-left: 0;
     margin-right: 0;
 }
 
-.btn-group .btn:first-child {
+.btn-group .pure-button:first-child {
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
 }
 
-.btn-group .btn:last-child {
+.btn-group .pure-button:last-child {
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
 }
 
-.btn-group-divided .btn:not(:last-child) {
+.btn-group-divided .pure-button:not(:last-child) {
     border-right: none;/*1px solid #ccc;*/
 }
 
-.btn, .pure-button {
+.pure-button {
     background: transparent;
     border: 1px solid #4d4d4d;
 }
 
-.btn:hover, .pure-button:hover {
+.pure-button:hover {
     background: #333;
-    color: #CCC;
+    color: #EEE;
 }
 
-.btn:focus, .pure-button:focus {
+.pure-button:focus {
     background-image: none;
 }
 
@@ -112,6 +149,8 @@ a:hover {
 	width: 25%;
 	height: 100%;
 	float: left;
+	overflow: hidden;
+	border-bottom-right-radius: 4px;
 	/*border-right: 1px solid red;*/
 }
 
@@ -183,6 +222,10 @@ a:hover {
 
 /* CHAT */
 
+.chat {
+	border-right: 1px solid #ddd;
+}
+
 .chat-messages {
 	list-style: none;
 	margin: 0 0 0.5em 0.5em;
@@ -201,24 +244,51 @@ a:hover {
 
 /* ROULETTE */
 .btn-bet {
-    width: 5em;
+    width: 90%;
+	margin: 0 auto;
     color: white;
-    font-size: 1.6em;
+    font-size: 1.4em;
+	padding-top: 0.25em;
+	padding-bottom: 0.25em;
+	border: none;
 }
 
 .btn-bet-red {
-    background: #FF2222;
+    background: #C03838;
+}
+.btn-bet-red:hover {
+    background: #AA2233;
 }
 .btn-bet-zero {
-    background: green;
+    background: #67AB59;
+}
+.btn-bet-zero:hover {
+    background: #249939;
 }
 .btn-bet-black {
-    background: #222;
+    background: #666;
+}
+.btn-bet-black:hover {
+    background: #333;
+}
+
+.roulette__bet-controls {
+	vertical-align: bottom;
 }
 
 .roulette__bet-sum {
+	display: inline-block;
     margin-top: 0.5em;
 }
+
+.roulette__bet {
+	text-align: center;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 1em;
+	margin: 1em;
+}
+
 .roulette__info {
     border-bottom: 1px solid #eee;
 }
@@ -230,4 +300,77 @@ a:hover {
 .roulette__bets {
     text-align: left;
     width: 100%;
+}
+
+.roulette__wheel-container {
+	position: relative;
+	border: 1px solid #FFF;
+	border-radius: 4px;
+	overflow: hidden;
+	text-align: center;
+}
+
+.roulette__wheel-overlay {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	box-shadow: inset 0 0 6px #000000;
+}
+
+.roulette__wheel {
+	overflow: hidden;
+	white-space: nowrap;
+	text-align: center;
+}
+
+.roulette__slot {
+	display: inline-block;
+	width: 70px;
+	/*height: 24px;*/
+	font-size: 1.6em;
+	color: #EEE;
+	text-align: center;
+	padding-top: 23px;
+	padding-bottom: 23px;
+}
+
+
+.roulette__slot--red {
+	background: #C03838;
+}
+
+.roulette__slot--zero {
+	background: #67AB59;
+}
+
+.roulette__slot--black {
+	background: #444;
+}
+
+.roulette__result {
+	margin: 0.25em auto;
+	max-width: 100%;
+	font-size: 1.2em;
+	color: #777;
+	padding-left: 1em;
+	border-bottom: 1px solid #ddd;
+}
+
+.roulette__result-chevron {
+	background: url('/assets/img/chevron-up-w70.png') no-repeat;
+	margin: 0.25em auto;
+	margin-bottom: 0;
+	width: 70px;
+	height: 24px;
+}
+
+.roulette__result-text {
+	display: inline-block;
+	margin: 0.5em auto;
+}
+
+.roulette__result-number {
+	color: #333;
 }
