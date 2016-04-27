@@ -13,5 +13,8 @@ module.exports = {
     },
     chat: {
         latestCount: 7
+    },
+    deposit: {
+        minItemPrice: 0.3   // $USD$
     }
 };

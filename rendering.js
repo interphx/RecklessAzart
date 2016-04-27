@@ -11,6 +11,51 @@ var hbs = (function() {
     handlebars.registerHelper('jsonify', function(context) {
         return JSON.stringify(context);
     });
+    handlebars.registerHelper('lt', function(a, b, options) { return a < b ? options.fn(this) : options.inverse(this); });
+    handlebars.registerHelper('lte', function(a, b, options) { return a <= b ? options.fn(this) : options.inverse(this); });
+    handlebars.registerHelper('eq', function(a, b, options) { return a == b ? options.fn(this) : options.inverse(this); });
+    handlebars.registerHelper('equiv', function(a, b, options) { return a === b ? options.fn(this) : options.inverse(this); });
+    handlebars.registerHelper('gte', function(a, b, options) { return a >= b ? options.fn(this) : options.inverse(this); });
+    handlebars.registerHelper('gt', function(a, b, options) { return a > b ? options.fn(this) : options.inverse(this); });
+    handlebars.registerHelper('neq', function(a, b, options) { return a != b ? options.fn(this) : options.inverse(this); });
+    handlebars.registerHelper('nequiv', function(a, b, options) { return a !== b ? options.fn(this) : options.inverse(this); });
+    
+    handlebars.registerHelper('and', function(a, b, options) { return a && b ? options.fn(this) : options.inverse(this); });
+    handlebars.registerHelper('or', function(a, b, options) { return a || b ? options.fn(this) : options.inverse(this); });
+    
+    //var cond_operator_regex = /{{\s*#\s*if\s*([^\{\}\!\=\<\>\&\|]+)\s*([\!\=\<\>\&\|]+)\s*([^\{\}]+)\s*}}/ig;
+    //var cond_closed_operator_regex = /{{\s*#\s*if\s*([^\{\}\!\=\<\>\&\|]+)\s*([\!\=\<\>\&\|]+)\s*([^\{\}]+)\s*}}(.*){{\s*\/\s*if\s*}}/ig;
+    var cond_closed_operator_regex = /{{\s*#\s*if\s*([^\{\}\!\=\<\>\&\|]+)\s*([\!\=\<\>\&\|]+)\s*([^\{\}]+)\s*}}([\s\S]*?){{\s*\/\s*if\s*}}/ig;
+    function replaceOperatorsToHandlebarsHelpers(s, _depth) {
+        if (_depth == null) _depth = 0;
+        if (_depth >= 30) {
+            console.log('FUCK! TEMPLATE HANDLEBARS REPLACER REACHED 30 DEPTH!');
+            return s;
+        }
+        var result = s;
+        
+        var result = result.replace(cond_closed_operator_regex, function(match, lhs, op, rhs, body) {
+
+            if (!body) return match;
+            var helper = ({
+                '<': 'lt',
+                '<=': 'lte',
+                '==': 'eq',
+                '===': 'equiv',
+                '>=': 'gte',
+                '>': 'gt',
+                '!=': 'neq',
+                '!==': 'nequiv',
+                '&&': 'and',
+                '||': 'or'
+            })[op.trim()];
+            if (!helper) return match;
+            return '{{#' + helper + ' ' + lhs + ' ' + rhs + '}}' + body + '{{/' + helper +  '}}';
+        });
+        if (result !== s) return replaceOperatorsToHandlebarsHelpers(result, _depth + 1);
+        //console.log(result);
+        return result;
+    }
     
     var walkSync = require('./util').walkSync;
     var files = walkSync(__dirname + '/templates');
@@ -54,7 +99,7 @@ var hbs = (function() {
         
         loaded_templates[template_name] = file_contents;
         compiled_templates[template_name] = handlebars.compile(file_contents);
-        handlebars.registerPartial(template_name, file_contents);
+        handlebars.registerPartial(template_name, replaceOperatorsToHandlebarsHelpers(file_contents));
         
         // TODO: Probably change this list to map
         if (file_contents.indexOf('{{#block') < 0      &&
@@ -100,12 +145,14 @@ var hbs = (function() {
         return shallowMerge([defaults, data || {}]);
     }
     
+    function render(template, data) {
+        data = data || {};
+        return handlebars.compile(replaceOperatorsToHandlebarsHelpers(template))(prepareData(data));
+    }
+    
     return {
         handlebars: handlebars,
-        render: function(template, data) {
-            data = data || {};
-            return handlebars.compile(template)(prepareData(data));
-        },
+        render: render,
         renderTemplate: function(template_name, data) {
             if (typeof template_name !== 'string' || template_name.trim() === '') {
                 throw new Error('Template name must be a valid non-empty string!');
@@ -117,7 +164,8 @@ var hbs = (function() {
                 console.log('Reloading template ', template_name);
                 loadTemplate(template_name);
             }
-            return compiled_templates[template_name](prepareData(data));
+            //return replaceOperatorsToHandlebarsHelpers(compiled_templates[template_name])(prepareData(data));
+            return render(loaded_templates[template_name], data);
         },
         setDefault: function(name, value) {
             defaults[name] = value;

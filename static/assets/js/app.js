@@ -90,10 +90,10 @@ var RouletteView = (function() {
             data: {
                 me: DATA.user,
                 betAmount: 0,
-                betType: null,
+                betType: [],
+                lastSubmittedBetAmount: 0,
                 lastRollResult: 0,
-                rollResult: 'Not rolled yet',
-                resultMessage: ''
+                moneyResult: 0
             }
         });
         
@@ -102,17 +102,43 @@ var RouletteView = (function() {
         this.$slots = $([]);
         this.initRouletteDOM(this.numbers);
         
-        this.ractive.on('bet', function(ev) {
-            var bet_type = parseInt($(ev.node).attr('data-bet-type'));
-            if (!isFinite(bet_type)) console.log('Problems!');
-
-            self.ractive.set('betType', bet_type);
-            self.ractive.set('betAmount', 50);
-            console.log('Bet made!');
-            self.socket.emit('bet', {
-                type: self.ractive.get('betType'),
-                amount: self.ractive.get('betAmount')
-            });
+        /*this.ractive.observe('');*/
+        
+        this.ractive.on('betChange', function(ev) {
+            var $radio = $(ev.node);
+            
+            var bet_type = self.ractive.get('betType');
+            if (bet_type.length > 0) {
+                self.ractive.set('betType', [$radio.prop('value')]);
+            }
+            
+            self.tryPlaceBet(self.getBetType(), self.getBetAmount());
+        });
+        
+        this.ractive.on('changeBetAmount', function(ev) {
+            var $node = $(ev.node);
+            var amount_op = $node.attr('data-amount').trim();
+            
+            if (amount_op === 'max') {
+                self.setBetAmount(self.ractive.get('me.balance'));
+            } else if (/\+/.test(amount_op)) {
+                var plusAmount = parseInt(amount_op.substr(1));
+                if (isFinite(plusAmount)) {
+                    console.log(self.getBetAmount(), plusAmount);
+                    self.setBetAmount(self.getBetAmount() + plusAmount);
+                }
+            } else if (/\//.test(amount_op)) {
+                var divisor = parseInt(amount_op.substr(1));
+                if (isFinite(divisor)) {
+                    self.setBetAmount(Math.floor(self.getBetAmount() / divisor));
+                }
+            } else {
+                var amount = parseInt(amount_op);
+                if (isFinite(amount)) {
+                    self.setBetAmount(amount);
+                }
+            }
+            
         });
         
         this.ractive.on('getFreeMoney', function(ev) {
@@ -122,19 +148,14 @@ var RouletteView = (function() {
         
         
         this.socket.on('roll-result', function(roll_result) {
-            self.ractive.set('rollResult', roll_result);
-            var bet_type = self.ractive.get('betType');
-            var win = (bet_type === 0 && roll_result >= 1 && roll_result <= 18) ||
-                        (bet_type === 1 && roll_result >= 19 && roll_result <= 35) ||
-                        (bet_type === 2 && roll_result === 0);
-            
-            if (win) {
-                self.ractive.set('resultMessage', 'Whoah! You won!');
-            } else {
-                self.ractive.set('resultMessage', 'Fail :(((');
-            }
+            self.ractive.set('lastRollResult', roll_result);
+            var bet_type = self.getBetType();
+            var money_result = self.getBetResult(self.getBetType(), self.getBetAmount(), roll_result);// TODO: Share roulette logic between server and client
+            self.ractive.set('moneyResult', money_result);
         });
         
+        
+        // TODO: move data gathering to separate utility class
         this.socket.on('data', function(){
             setTimeout(function(){
                 self.ractive.set('user', DATA.user);
@@ -144,6 +165,28 @@ var RouletteView = (function() {
     
     RouletteView.prototype = {
         constructor: RouletteView,
+        getBetResult: function(type, amount, roll_result) {
+            bet_type = bet_type.toString().trim();
+            if (!isFinite(roll_result)) {
+                console.log('Invalid roll result:', roll_result);
+            }
+            if (!isFinite(amount)) {
+                console.log('Invalid bet amount:', amount);
+            }
+            if (['1-7', '0', '8-14'].indexOf(type) < 0) {
+                console.log('Invalid bet type:', type);
+            }
+            // Wins
+            if (type === '1-7' && roll_result >= 1 && roll_result <= 7) {
+                return amount;
+            } else if (type === '0' && roll_result === 0) {
+                return amount * 14;
+            } else if (type === '8-14' && roll_result >= 8 && roll_result <= 14) {
+                return amount;
+            } else {
+                return -amount;
+            }
+        },
         getNumberCSSClasses: function(number) {
             if (number === 0) return ['roulette__slot--zero'];
             if (number < this.blacksStartFrom) return ['roulette__slot--red'];
@@ -161,7 +204,7 @@ var RouletteView = (function() {
                 for (var i = 0; i < this.numbers.length; ++i) {
                     var number = this.numbers[i];
                     var color_class = this.getNumberCSSClasses(number).join(' ');
-                    $wheel.append('<div class="roulette__slot ' + color_class + ' ' + enabled_class + '">' + number + '</div>');
+                    $wheel.append('<div class="roulette__slot noselect ' + color_class + ' ' + enabled_class + '">' + number + '</div>');
                 }
             }
             
@@ -193,6 +236,45 @@ var RouletteView = (function() {
         setRoulettePos: function(number) {
             console.log(-this.getRequiredRoulettePos(number));
             this.$wheel.transition({ x: -this.getRequiredRoulettePos(number) }, 0);
+        },
+        tryPlaceBet: function(type, amount) {
+            if (!type) {
+                console.log('Invalid bet type:', type);
+                return;
+            }
+            type = type.toString().trim();
+            if (!amount || !isFinite(amount)) {
+                console.log('Invalid bet amount:', amount);
+                return;
+            }
+            if (['1-7', '0', '8-14'].indexOf(type) < 0) {
+                console.log('Invalid bet type:', type);
+                return;
+            }
+            this.socket.emit('place-bet', {
+                type: type,
+                amount: amount
+            });
+        },
+        tryRemoveBet: function() {
+            this.socket.emit('remove-bet');
+        },
+        getBetType: function() {
+            var bet_type = this.ractive.get('betType');
+            if (bet_type.length == null) {
+                return bet_type;
+            }
+            return bet_type[bet_type.length - 1];
+        },
+        getBetAmount: function() {
+            var result = this.ractive.get('betAmount');
+            if (!result || !isFinite(result)) {
+                return 0;
+            }
+            return result;
+        },
+        setBetAmount: function(amount) {
+            this.ractive.set('betAmount', Math.min(this.ractive.get('me.balance'), amount));
         }
     }
     

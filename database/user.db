@@ -1,4 +1,4 @@
-{"name":"User","password":"1234","balance":97400,"roles":["user","admin"],"logged_in":true,"_id":"99R7hDsK9XtIlv6t"}
+{"name":"User","password":"1234","balance":97200,"roles":["user","admin"],"logged_in":true,"_id":"99R7hDsK9XtIlv6t"}
 {"name":"User","password":"1234","balance":100500,"roles":["user","admin"],"_id":"D9uv4vDEKktg4l5I"}
 {"name":"User","password":"1234","balance":100500,"roles":["user","admin"],"_id":"fThBIuwUUAmGRt7e"}
 {"name":"User","password":"1234","balance":100500,"roles":["user","admin"],"_id":"pApNxR6JZZp7xukK"}
