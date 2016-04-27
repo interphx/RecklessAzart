@@ -76,6 +76,7 @@ a:hover {
     padding: 0.5em 0.6em;
     box-sizing: border-box;
     vertical-align: middle;
+	cursor: pointer;
 }
 
 .pure-button {
@@ -317,13 +318,28 @@ a:hover {
 	bottom: 0;
 	left: 0;
 	box-shadow: inset 0 0 6px #000000;
+	border-radius: 4px;
+	z-index: 10;
 }
 
 .roulette__wheel {
-	overflow: hidden;
+	overflow: visible;
 	white-space: nowrap;
-	text-align: center;
+	text-align: left;
+	/*width: 7770px;*/
+	/*border-radius: 4px;*/
 }
+/*
+.roulette__slots-wrapper-right {
+	display: inline-block;
+	right: -50%;
+	position: relative;
+}
+
+.roulette__slots-wrapper-left {
+	position: relative;
+	left: -50%;
+}*/
 
 .roulette__slot {
 	display: inline-block;

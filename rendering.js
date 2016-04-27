@@ -32,12 +32,23 @@ var hbs = (function() {
         handlebars.unregisterPartial(template_name);
         console.log(filename);
         
+        // Partials
         var used_partial_match;
         var used_partial_re = /\{\{\s*\>\s*([a-zA-Z0-9\_\-\.\!\?]+)\s*\}\}/ig;
         while((used_partial_match = used_partial_re.exec(file_contents)) !== null) {
             console.log(used_partial_match[1]);
             if (used_partial_match.length < 2) continue;
             var nested_template_name = used_partial_match[1].trim();
+            loadTemplate(nested_template_name, _loaded);
+        }
+        
+        // Parents
+        var used_parent_match;
+        var used_parent_re = /\{\{\s*\#\s*extend\s+['"]?([a-zA-Z0-9\_\-\.\!\?]+)['"]?\s*\}\}/ig;
+        while((used_parent_match = used_parent_re.exec(file_contents)) !== null) {
+            console.log(used_parent_match[1]);
+            if (used_parent_match.length < 2) continue;
+            var nested_template_name = used_parent_match[1].trim();
             loadTemplate(nested_template_name, _loaded);
         }
         

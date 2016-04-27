@@ -75,6 +75,11 @@ var RouletteView = (function() {
     function RouletteView(socket) {
         var self = this;
         
+        this.numbers = [4, 11, 6, 13, 2, 9, 1, 0, 14, 3, 10, 5, 12, 7, 8];
+        this.blacksStartFrom = 8;
+        
+        this.slotWidth = 70;
+        
         this.$container = $('.right-panel');
         this.socket = socket;
         this.ractive = new Ractive({
@@ -86,10 +91,16 @@ var RouletteView = (function() {
                 me: DATA.user,
                 betAmount: 0,
                 betType: null,
+                lastRollResult: 0,
                 rollResult: 'Not rolled yet',
                 resultMessage: ''
             }
         });
+        
+        this.$wheelContainer = this.$container.find('.roulette__wheel-container');
+        this.$wheel = this.$container.find('.roulette__wheel');
+        this.$slots = $([]);
+        this.initRouletteDOM(this.numbers);
         
         this.ractive.on('bet', function(ev) {
             var bet_type = parseInt($(ev.node).attr('data-bet-type'));
@@ -131,6 +142,60 @@ var RouletteView = (function() {
         });
     }
     
+    RouletteView.prototype = {
+        constructor: RouletteView,
+        getNumberCSSClasses: function(number) {
+            if (number === 0) return ['roulette__slot--zero'];
+            if (number < this.blacksStartFrom) return ['roulette__slot--red'];
+            return ['roulette__slot--black'];
+        },
+        initRouletteDOM: function(numbers) {
+            var repetitions = 3;
+            var slot_width = this.slotWidth;
+            var $wheel = this.$wheel;
+            $wheel.empty();
+            $wheel.css('width', this.numbers.length * repetitions * slot_width);
+            
+            for (var j = 0; j < repetitions; ++j) {
+                var enabled_class = j === Math.floor(repetitions / 2) ? 'roulette__slot--enabled' : '';
+                for (var i = 0; i < this.numbers.length; ++i) {
+                    var number = this.numbers[i];
+                    var color_class = this.getNumberCSSClasses(number).join(' ');
+                    $wheel.append('<div class="roulette__slot ' + color_class + ' ' + enabled_class + '">' + number + '</div>');
+                }
+            }
+            
+            this.$slots = this.$wheel.find('.roulette__slot.roulette__slot--enabled');
+            this.setRoulettePos(0);
+        },
+        getSlotElementByNumber: function(number) {
+            return this.$slots.filter(':contains("' + number + '")').filter(function() { return $(this).text() === number.toString() });
+        },
+        getRequiredRoulettePos: function(number) {            
+            var $choosen_slot = this.getSlotElementByNumber(number);
+            var container_width = this.$wheelContainer.width();
+            var center_slot_left = this.slotWidth * (container_width / this.slotWidth / 2);	
+            
+            var choosen_slot_index = $choosen_slot.index();
+            var choosen_slot_left = this.slotWidth * choosen_slot_index;
+            console.log(choosen_slot_index);
+            return Math.floor(choosen_slot_left - center_slot_left + this.slotWidth / 2);
+        },
+        animateRoulettePos: function(number) {
+            var time = 4000;
+            var lastRollResult = this.ractive.get('lastRollResult');
+            if (lastRollResult != null) {
+                time = (Math.abs(this.numbers.indexOf(number) - this.numbers.indexOf(lastRollResult)) / (this.numbers.length - 1)) * 4000;
+                console.log(time);
+            }
+            this.$wheel.transition({ x: -this.getRequiredRoulettePos(number) }, time, 'in-out');
+        },
+        setRoulettePos: function(number) {
+            console.log(-this.getRequiredRoulettePos(number));
+            this.$wheel.transition({ x: -this.getRequiredRoulettePos(number) }, 0);
+        }
+    }
+    
     return RouletteView;
 })();
 
@@ -164,7 +229,7 @@ var Controllers = {
     }
 };
 
-(function() {
+$(document).ready(function() {
     function runController(controller_name) {
         if (typeof controller_name === 'string' && Controllers[controller_name]) {
             if (typeof Controllers[controller_name].onInit === 'function') {
@@ -175,4 +240,4 @@ var Controllers = {
     
     runController('all');
     runController($(document.body).attr('data-controller'));
-})();
+});
