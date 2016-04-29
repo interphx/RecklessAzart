@@ -120,7 +120,7 @@ var RouletteView = (function() {
             var amount_op = $node.attr('data-amount').trim();
             
             if (amount_op === 'max') {
-                self.setBetAmount(self.ractive.get('me.balance'));
+                self.setBetAmount(self.ractive.get('me.balance.money'));
             } else if (/\+/.test(amount_op)) {
                 var plusAmount = parseInt(amount_op.substr(1));
                 if (isFinite(plusAmount)) {
@@ -274,7 +274,7 @@ var RouletteView = (function() {
             return result;
         },
         setBetAmount: function(amount) {
-            this.ractive.set('betAmount', Math.min(this.ractive.get('me.balance'), amount));
+            this.ractive.set('betAmount', Math.min(this.ractive.get('me.balance.money'), amount));
         }
     }
     

@@ -5,6 +5,7 @@ var expressSession = require('express-session');
 var passport = require('passport');
 var passportSocketIo = require('passport.socketio');
 var LocalStrategy = require('passport-local').Strategy;
+var SteamStrategy = require('passport-steam').Strategy;
 var app = express();
 
 var http = require('http').Server(app);
@@ -12,7 +13,7 @@ var io = require('socket.io')(http);
 
 var config = require('./config');
 var User = require('./models').User;
-
+/*
 passport.use(new LocalStrategy(
     { passReqToCallback: true },
     function(req, username, password, cb) {
@@ -22,6 +23,33 @@ passport.use(new LocalStrategy(
             if (!user) {console.log('No such user: ', username); return cb(null, false); }
             if (user.password !== password) { console.log('Invalid password: ', password); return cb(null, false); }
             return cb(null, user);
+        });
+    }
+));
+
+function createUserFromSteamId(steamId) {
+    
+}
+
+// TODO: This URL needs to be dynamic and either stored in config or generated authomatically
+passport.use(new SteamStrategy({
+        returnURL: 'http://localhost/auth/steam/return',
+        realm: 'http://localhost/',
+        apiKey: config.steamAPIKey
+    },
+    function(identifier, profile, done) {
+        console.log('STEAM PROFILE');
+        console.log(identifier);
+        User.findOne({ 'authIdentifiers.steam': identifier }, function(err, user) {
+            if (err) {
+                done(err);
+                return;
+            }
+            if (user) {
+                done(null, user);
+            } else {
+                done(null, createUserFromSteamId(identifier));
+            }
         });
     }
 ));
@@ -41,7 +69,7 @@ passport.deserializeUser(function(id, cb) {
         }
     });
 });
-
+*/
 // Utility functions
 
 function rootpath(path) {
@@ -78,6 +106,8 @@ app.use(cookieParser);
 app.use(passport.initialize());
 app.use(passport.session());
 
+require('./auth').initializeAuth(app);
+
 io.use(passportSocketIo.authorize({
     cookieParser: require('cookie-parser'),
     key: 'connect.sid',
@@ -104,13 +134,14 @@ app.use(express.static(rootpath('static')));
 
 app.get('/', function(req, res) {
     //chatServer.fetchLatest(function(err, results) {
-        if (!req.user.getClientSideData) {
+        console.log('REQ.USER: ', req.user);
+        if (!req.user || !req.user.getClientSideData) {
             console.log('Weird user object: ', req.user);
         }
         res.send(renderTemplate('index', {
             messages: [],
             $clientData: {
-                user: (req.user && req.user.logged_in && req.user.getClientSideData) ? req.user.getClientSideData() : { name: 'Anonymous', balance: 0, roles: ['guest'] }
+                user: (req.user && req.user.logged_in && req.user.getClientSideData) ? req.user.getClientSideData() : { name: 'Anonymous', balance: {money:0}, roles: ['guest'] }
             }
         }));
     //});

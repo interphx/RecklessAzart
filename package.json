@@ -22,6 +22,7 @@
     "nedb-session-store": "^1.1.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
+    "passport-steam": "^1.0.1",
     "passport.socketio": "^3.6.1",
     "socket.io": "^1.4.5",
     "steam": "^1.4.0",

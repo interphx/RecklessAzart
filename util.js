@@ -2,6 +2,11 @@ var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
 
+// TODO: Unsafe, especially for dates. Redo to safe variant
+function deepCopyPOD(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
+
 function getLocalPath(p) {
     return path.join(global.appRoot || __dirname, p);
 }
@@ -73,5 +78,6 @@ module.exports = {
     noop: function() {},
     getLocalPath: getLocalPath,
     writeLocalFile: writeLocalFile,
-    readLocalFile: readLocalFile
+    readLocalFile: readLocalFile,
+    deepCopyPOD: deepCopyPOD
 };

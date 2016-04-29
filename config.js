@@ -1,6 +1,8 @@
 module.exports = {
+    schema: 'http',
     domain: 'localhost',
     secret: 'abcd3333fghijklmnohardanalsex',
+    steamAPIKey: '4D817705DDA90770247DE0E19BF8D80A',
     rendering: {
         cacheTemplates: false
     },
