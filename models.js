@@ -90,7 +90,9 @@ function createModel(name, params) {
         }
     };
     
-    constructor.name = name;
+    // :(
+    // It's a shame we cannot just create a named function without eval/new Functon scopeless hacks
+    Object.defineProperty(constructor, 'name', { value: name });
     constructor._dbFile = __dirname + '/database/' + util.camelCaseToUnderscore(name.trim()).toLowerCase() + '.db';
     constructor._db = new nedb({filename: constructor._dbFile, autoload: true});
     
@@ -173,7 +175,7 @@ function createModel(name, params) {
         if (!params.static.hasOwnProperty(key)) continue;
         constructor[key] = params.static[key];
     }
-    
+
     return constructor;
 };
 

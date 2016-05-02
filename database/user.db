@@ -5,3 +5,4 @@
 {"name":"User","password":"1234","balance":100500,"roles":["user","admin"],"_id":"pApNxR6JZZp7xukK"}
 {"name":"User","password":"1234","balance":100500,"roles":["user","admin"],"_id":"pSIFW3DJ3AKydxVb"}
 {"name":"User","password":"1234","balance":100500,"roles":["user","admin"],"_id":"sWWQAOU0uMEoXzGW"}
+{"name":"Kolbasta","balance":{"money":0},"authIdentifiers":{"steam":"http://steamcommunity.com/openid/id/76561198150683623"},"roles":["user"],"_id":"vWpQEQK5UkEMxVqQ"}

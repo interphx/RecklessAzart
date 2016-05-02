@@ -141,7 +141,7 @@ app.get('/', function(req, res) {
         res.send(renderTemplate('index', {
             messages: [],
             $clientData: {
-                user: (req.user && req.user.logged_in && req.user.getClientSideData) ? req.user.getClientSideData() : { name: 'Anonymous', balance: {money:0}, roles: ['guest'] }
+                user: (req.user && req.user.getClientSideData) ? req.user.getClientSideData() : { name: 'Anonymous', balance: {money:0}, roles: ['guest'] }
             }
         }));
     //});
