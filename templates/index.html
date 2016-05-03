@@ -6,12 +6,26 @@
 <div class="logo pure-u-1 pure-u-md-1-4">Рулеточка</div>
 <div class="mainmenu pure-menu pure-menu-horizontal pure-u-1 pure-u-md-3-4">
 	<ul class="tabs pure-menu-list">
-		<li class="tabs__tab pure-menu-item"><a class="tabs__link pure-menu-link" href="#">Рулетка</a></li>
+		<li class="tabs__tab tabs__tab--active pure-menu-item"><a class="tabs__link pure-menu-link" href="#">Рулетка</a></li>
 		<li class="tabs__tab pure-menu-item"><a class="tabs__link pure-menu-link" href="#">Пополнить баланс</a></li>
 		<li class="tabs__tab pure-menu-item"><a class="tabs__link pure-menu-link" href="#">Вывести</a></li>
 		<li class="tabs__tab pure-menu-item"><a class="tabs__link pure-menu-link" href="#">Справка</a></li>
 	</ul>
-    <div class="mainmenu-toggle">X</div>
+	
+	<div class="mainmenu-toggle">X</div>
+	{{#if me.loggedIn != true}}
+	<div class="auth-steam"><a href="/auth/steam" class="auth-steam__link"><img src="https://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_large_noborder.png"></a></div>
+	{{else}}
+	<div class="miniprofile">
+		<div class="miniprofile__column miniprofile__column--left">
+			<img class="miniprofile__avatar" src="{{ me.avatars.steamAvatarMedium }}">
+		</div>
+		<div class="miniprofile__column miniprofile__column--right">
+			<span class="miniprofile__name">{{ me.name }}</span><br>
+			<span class="miniprofile__balance">Баланс: {{ me.balance.money }}</span>		
+		</div>
+	</div>
+	{{/if}}
 </div>
 {{/content}}
 

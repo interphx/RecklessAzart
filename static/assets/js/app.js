@@ -78,7 +78,7 @@ var RouletteView = (function() {
         this.numbers = [4, 11, 6, 13, 2, 9, 1, 0, 14, 3, 10, 5, 12, 7, 8];
         this.blacksStartFrom = 8;
         
-        this.slotWidth = 70;
+        this.slotWidth = 80;
         
         this.$container = $('.right-panel');
         this.socket = socket;
@@ -93,6 +93,8 @@ var RouletteView = (function() {
                 betType: [],
                 lastSubmittedBetAmount: 0,
                 lastRollResult: 0,
+                lastRolls: [0],
+                roulettePos: 0,
                 moneyResult: 0
             }
         });
@@ -209,7 +211,7 @@ var RouletteView = (function() {
             }
             
             this.$slots = this.$wheel.find('.roulette__slot.roulette__slot--enabled');
-            this.setRoulettePos(0);
+            this.updateRoulettePos();
         },
         getSlotElementByNumber: function(number) {
             return this.$slots.filter(':contains("' + number + '")').filter(function() { return $(this).text() === number.toString() });
@@ -232,10 +234,15 @@ var RouletteView = (function() {
                 console.log(time);
             }
             this.$wheel.transition({ x: -this.getRequiredRoulettePos(number) }, time, 'in-out');
+            this.ractive.set('roulettePos', number);
         },
         setRoulettePos: function(number) {
-            console.log(-this.getRequiredRoulettePos(number));
+            //console.log(-this.getRequiredRoulettePos(number));
             this.$wheel.transition({ x: -this.getRequiredRoulettePos(number) }, 0);
+            this.ractive.set('roulettePos', number);
+        },
+        updateRoulettePos: function() {
+            this.setRoulettePos(this.ractive.get('roulettePos'));
         },
         tryPlaceBet: function(type, amount) {
             if (!type) {

@@ -33,10 +33,18 @@ module.exports = {
 
         function createUserFromSteamData(steamData, done) {
             var username = steamData.username;
+            var avatarSmall = steamData.avatarSmall || undefined;
+            var avatarMedium = steamData.avatarMedium || undefined;
+            var avatarFull = steamData.avatarFull || undefined;
             var identifier = steamData.identifier;
                 
             var user = new User({
                 name: username,
+                avatars: {
+                    steamAvatarSmall: avatarSmall,
+                    steamAvatarMedium: avatarMedium,
+                    steamAvatarFull: avatarFull
+                },
                 authIdentifiers: {
                     steam: identifier
                 },
@@ -64,6 +72,13 @@ module.exports = {
             function(identifier, profile, done) {
                 console.log('STEAM PROFILE');
                 console.log(identifier, profile);
+                var steamData = {
+                    username: profile._json.displayname || profile._json.personaname,
+                    identifier: identifier,
+                    avatarSmall: profile._json.avatarsmall,
+                    avatarMedium: profile._json.avatarmedium,
+                    avatarFull: profile._json.avatarfull
+                };
                 User.findOne({ $or: [{'authIdentifiers.steam': identifier}, {'authIdentifiers.steam': profile._json.steamid}] }, function(err, user) {
                     if (err) {
                         done(err);
@@ -71,13 +86,26 @@ module.exports = {
                     }
                     if (user) {
                         console.log('FOUND USER: ', user);
-                        done(null, user);
+                        // TODO: Will fuck up if we allow to use non-steam usernames in the app. User { names: { steam: ..., local: ... } } would be a better solution.
+                        // Alternatively, we could keep completely separate records with account data (steam, local, facebook and whatnot) and merge them on demand.
+                        if (steamData.username !== user.name) {
+                            user.name = steamData.username;
+                        }
+                        if (steamData.avatarFull !== user.avatars.steamAvatarFull) {
+                            user.avatars.steamAvatarSmall = steamData.avatarSmall;
+                            user.avatars.steamAvatarMedium = steamData.avatarMedium;
+                            user.avatars.steamAvatarFull = steamData.avatarFull;
+                        }
+                        user.persist(function(err, user) {
+                            if (err) {
+                                done(err);
+                                return;
+                            }
+                            done(null, user);
+                        });
                     } else {
                         console.log('USER NOT FOUND, CREATING...');
-                        createUserFromSteamData({
-                            username: profile._json.displayname || profile._json.personaname,
-                            identifier: identifier
-                        }, done);
+                        createUserFromSteamData(steamData, done);
                     }
                 });
             }

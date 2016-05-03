@@ -35,7 +35,10 @@ var ChatServer = (function(){
         },
         fetchLatest: function(cb) {
             ChatEntry.find({}).sort({ createdAt: -1 }).limit(this.latestCount).exec(function(err, results) {
-                if (err) cb(err); return;
+                if (err) { 
+                    cb(err); 
+                    return;
+                }
                 cb(null, results.reverse());
             });
         },

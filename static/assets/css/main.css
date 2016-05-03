@@ -158,9 +158,9 @@ input[type="checkbox"].toggle:checked + label {
 .top-panel {
 	width: 100%;
 	overflow: auto;
-	/*border-bottom: 1px solid blue;*/
     background: #f8f8f8;
-    
+    height: 50px;
+	overflow: hidden;
     border-bottom: 1px solid #ddd;
 }
 
@@ -194,6 +194,7 @@ input[type="checkbox"].toggle:checked + label {
 	/*list-style: none;
 	padding: 0;
 	margin: 0;*/
+	height: 100%;
 }
 
 .tabs__tab {
@@ -207,6 +208,12 @@ input[type="checkbox"].toggle:checked + label {
 	/*font-family: Verdana, Arial, sans-serif;*/
     font-family: 'Open Sans', sans-serif;
 	letter-spacing: 0;
+	height: 100%;
+	box-sizing: border-box;
+}
+
+.tabs__tab--active {
+	border-bottom: 2px solid #ef3939;
 }
 
 .tabs__tab:not(:last-child) {
@@ -232,11 +239,64 @@ input[type="checkbox"].toggle:checked + label {
 	background: inherit !important;
 }
 
+.mainmenu {
+	height: 100%;
+}
+
 .mainmenu-toggle {
     float: right;
     width: 1.2em;
     height: 1.2em;
     cursor: pointer;
+}
+
+/* CLEARABLE INPUTS */
+
+input[data-clearable] {
+  background: #fff url(/assets/img/cross16x16.png) no-repeat right -16px center;
+  padding-right: 24px;
+  transition: background 0.4s;
+}
+input[data-clearable].clearable-x  {
+	background-position: right 5px center;
+}
+input[data-clearable].clearable-hover-x {
+	cursor: pointer;
+	background-image: url(/assets/img/cross_highlighted16x16.png);
+}
+input[data-clearable]::-ms-clear {display: none; width:0; height:0;}
+
+/* AUTH-STEAM */
+
+.auth-steam {
+	float: right;
+	padding: 0.25em 0.5em 0 0;
+}
+
+/* MINIPROFILE */
+
+.miniprofile {
+	float: right;
+	max-width: 40%;
+	height: 100%;
+	overflow: auto;
+	padding: 0.25em;
+}
+
+.miniprofile__column {
+	float: left;
+	padding: 0.25em;
+}
+
+.miniprofile__balance {
+	color: #999;
+	font-size: 0.8em;
+}
+
+.miniprofile__avatar {
+	width: 32px;
+	height: 32px;
+	border-radius: 4px;
 }
 
 /* CHAT */
@@ -270,25 +330,65 @@ input[type="checkbox"].toggle:checked + label {
 	padding-top: 0.25em;
 	padding-bottom: 0.25em;
 	border: none;
+	box-shadow: rgba(0, 0, 0, 0.33) 0px 2px 5px 0px;
+}
+
+.btn-bet:active {
+	box-shadow: none;
 }
 
 .btn-bet-red {
-    background: #C03838;
+    background-color: #C03838;
+	background-image: -webkit-linear-gradient(0deg, #C74F4A, #B72F2F);
+	background-image: -moz-linear-gradient(0deg, #C74F4A, #B72F2F);
+	background-image: -o-linear-gradient(0deg, #C74F4A, #B72F2F);
+	background-image: linear-gradient(0deg, #C74F4A, #B72F2F);
 }
 .btn-bet-red:hover {
     background: #AA2233;
 }
+.toggle:checked + .btn-bet-red:hover {
+    background-color: #C03838;
+	background-image: -webkit-linear-gradient(0deg, #C74F4A, #B72F2F);
+	background-image: -moz-linear-gradient(0deg, #C74F4A, #B72F2F);
+	background-image: -o-linear-gradient(0deg, #C74F4A, #B72F2F);
+	background-image: linear-gradient(0deg, #C74F4A, #B72F2F);
+}
+
 .btn-bet-zero {
-    background: #67AB59;
+	background-color: #67AB59;
+    background-image: -webkit-linear-gradient(0deg, #67AB59, #50A549);
+    background-image: -moz-linear-gradient(0deg, #67AB59, #50A549);
+    background-image: -o-linear-gradient(0deg, #67AB59, #50A549);
+    background-image: linear-gradient(0deg, #67AB59, #50A549);
 }
 .btn-bet-zero:hover {
     background: #249939;
 }
+.toggle:checked + .btn-bet-zero:hover {
+	background-color: #67AB59;
+    background-image: -webkit-linear-gradient(0deg, #67AB59, #50A549);
+    background-image: -moz-linear-gradient(0deg, #67AB59, #50A549);
+    background-image: -o-linear-gradient(0deg, #67AB59, #50A549);
+    background-image: linear-gradient(0deg, #67AB59, #50A549);
+}
+
 .btn-bet-black {
-    background: #666;
+    background-color: #555;
+	background-image: -webkit-linear-gradient(0deg, #555, #4B4B4B);
+	background-image: -moz-linear-gradient(0deg, #555, #4B4B4B);
+	background-image: -o-linear-gradient(0deg, #555, #4B4B4B);
+	background-image: linear-gradient(0deg, #555, #4B4B4B);
 }
 .btn-bet-black:hover {
     background: #333;
+}
+.toggle:checked + .btn-bet-black:hover {
+    background-color: #555;
+	background-image: -webkit-linear-gradient(0deg, #555, #4B4B4B);
+	background-image: -moz-linear-gradient(0deg, #555, #4B4B4B);
+	background-image: -o-linear-gradient(0deg, #555, #4B4B4B);
+	background-image: linear-gradient(0deg, #555, #4B4B4B);
 }
 
 .roulette__bet-controls {
@@ -362,7 +462,7 @@ input[type="checkbox"].toggle:checked + label {
 
 .roulette__slot {
 	display: inline-block;
-	width: 70px;
+	width: 80px;
 	/*height: 24px;*/
 	font-size: 1.6em;
 	color: #EEE;
@@ -373,7 +473,7 @@ input[type="checkbox"].toggle:checked + label {
 
 
 .roulette__slot--red {
-	background: #C03838;
+	background: #BD524D;
 }
 
 .roulette__slot--zero {

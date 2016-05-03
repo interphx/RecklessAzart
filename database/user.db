@@ -1,7 +1,7 @@
 {"name":"User","password":"1234","balance":97200,"roles":["user","admin"],"logged_in":true,"_id":"99R7hDsK9XtIlv6t"}
 {"name":"User","password":"1234","balance":100500,"roles":["user","admin"],"_id":"D9uv4vDEKktg4l5I"}
 {"name":"User","password":"1234","balance":100500,"roles":["user","admin"],"_id":"fThBIuwUUAmGRt7e"}
-{"name":"c1202840","balance":{"money":0},"authIdentifiers":{"steam":"http://steamcommunity.com/openid/id/76561198301403208"},"roles":["user"],"_id":"oG8eU5OFMpFKAplH"}
+{"name":"c1202840","avatars":{"steamAvatarMedium":"https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_medium.jpg","steamAvatarFull":"https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg"},"balance":{"money":0},"authIdentifiers":{"steam":"http://steamcommunity.com/openid/id/76561198301403208"},"_id":"oG8eU5OFMpFKAplH"}
 {"name":"User","password":"1234","balance":100500,"roles":["user","admin"],"_id":"pApNxR6JZZp7xukK"}
 {"name":"User","password":"1234","balance":100500,"roles":["user","admin"],"_id":"pSIFW3DJ3AKydxVb"}
 {"name":"User","password":"1234","balance":100500,"roles":["user","admin"],"_id":"sWWQAOU0uMEoXzGW"}

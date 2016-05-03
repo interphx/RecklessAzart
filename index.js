@@ -8,6 +8,8 @@ var LocalStrategy = require('passport-local').Strategy;
 var SteamStrategy = require('passport-steam').Strategy;
 var app = express();
 
+var util = require('./util');
+
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
@@ -133,18 +135,20 @@ io.use(function(socket, next) {
 app.use(express.static(rootpath('static')));
 
 app.get('/', function(req, res) {
-    //chatServer.fetchLatest(function(err, results) {
+    chatServer.fetchLatest(function(err, results) {
         console.log('REQ.USER: ', req.user);
         if (!req.user || !req.user.getClientSideData) {
             console.log('Weird user object: ', req.user);
         }
         res.send(renderTemplate('index', {
-            messages: [],
+            messages: results,
+            // TODO: This is ugly. Make everything be forwarded to client-side DATA by default, use $clientData field to modify this behaviour (exclude/include/only, merge)
+            me: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false },
             $clientData: {
-                user: (req.user && req.user.getClientSideData) ? req.user.getClientSideData() : { name: 'Anonymous', balance: {money:0}, roles: ['guest'] }
+                user: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false }
             }
         }));
-    //});
+    });
 });
 
 app.get('/forbidden', function(req, res) {

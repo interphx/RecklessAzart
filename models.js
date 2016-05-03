@@ -17,7 +17,13 @@ var BaseModel = (function() {
             if (!this._id) {
                 return this.constructor.insert(this, cb);
             } else {
-                return this.constructor.update({ _id: self._id }, self.constructor.serializeToPOD(self), cb);
+                return this.constructor.update({ _id: self._id }, self.constructor.serializeToPOD(self), function(err) {
+                    if (err) {
+                        cb(err);
+                        return;
+                    }
+                    cb(null, self);
+                });
             }
         },
         serializeToPOD: function(options) {
@@ -28,10 +34,17 @@ var BaseModel = (function() {
     BaseModel.serializeToPOD = function(obj, options) {
         options = options || {};
         var result = {};
-        for (var key in obj) {
+        var fields_to_serialize = Object.keys(obj.constructor.modelParams ? obj.constructor.modelParams.fields : obj);
+        for (var i = 0; i < fields_to_serialize.length; ++i) {
+            var key = fields_to_serialize[i];
             if (key.startsWith('$_') || key.startsWith('_')) continue;
             if ((!options.only || options.only.indexOf(key) >= 0) && (!options.exclude || options.exclude.indexOf(key) < 0)) {
                 result[key] = obj[key];
+            }
+        }
+        if (options.include) {
+            for (var i = 0; i < options.include.length; ++i) {
+                result[options.include[i]] = obj[options.include[i]];
             }
         }
         return result;
@@ -90,6 +103,7 @@ function createModel(name, params) {
         }
     };
     
+    constructor.modelParams = params;
     // :(
     // It's a shame we cannot just create a named function without eval/new Functon scopeless hacks
     Object.defineProperty(constructor, 'name', { value: name });
@@ -113,7 +127,7 @@ function createModel(name, params) {
     
     for (var key in params.properties) {
         if (!params.properties.hasOwnProperty(key)) continue;
-        Object.defineProperty(constructor.prototype, key, params.properties[key]);
+        Object.defineProperty(constructor.prototype, key, util.shallowMerge([{enumerable: false}, params.properties[key]]));
     }
     
     for (var key in params.methods) {
@@ -166,7 +180,12 @@ function createModel(name, params) {
             throw new Error('Tried to deserialize something falsey: ', data);
         }
         var result = new constructor(data);
+        /*console.log('Deserialized from data: ', data);
+        console.log('Deserialized object, PROTOTYPE: ', constructor.prototype);
         console.log('Deserialized object of ', constructor.name, ', has getClientSideData: ', result.getClientSideData != null);
+        console.log('Result instanceof constructor: ', result instanceof constructor);
+        console.log('Result keys: ', Object.keys(result));
+        console.log('getClientSideData equality: ', result.getClientSideData, result.__proto__.getClientSideData, constructor.prototype.getClientSideData);*/
         //return new constructor(data);
         return result;
     };
@@ -206,11 +225,24 @@ var models = {
         fields: {
             name: undefined,
             password: undefined,
+            avatars: {
+                default: {
+                    steamAvatarSmall: undefined,
+                    steamAvatarMedium: undefined,
+                    steamAvatarFull: undefined                    
+                }
+            },
             balance: {
                 default: {money: 0}
             },
             authIdentifiers: {
                 default: {}
+            }
+        },
+        
+        properties: {
+            loggedIn: {
+                get: function() { return true; }
             }
         },
         
@@ -220,7 +252,8 @@ var models = {
             },
             getClientSideData: function() {
                 return this.serializeToPOD({
-                    exclude: ['password', 'password_hash', 'password_salt', 'salt']
+                    exclude: ['password', 'password_hash', 'password_salt', 'salt'],
+                    inlcude: ['loggedIn']
                 });
             }
         }

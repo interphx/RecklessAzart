@@ -40,6 +40,9 @@ var camelCaseToUnderscore = function(s) {
 };
 
 var shallowMerge = function(objects) {
+    if (!objects.length) {
+        throw new Error('shallowMerge must receive a collection!');
+    }
     var result = {};
     for (var i = 0; i < objects.length; ++i) {
         var obj = objects[i];
