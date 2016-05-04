@@ -63,9 +63,9 @@ var ChatView = (function() {
             self.ractive.set('messages', self.ractive.get('messages').concat(messages));
         });
         
-        this.socket.emit('chat-message', {
+        /*this.socket.emit('chat-message', {
             text:'hi guts'
-        });
+        });*/
     }
     
     return ChatView;
@@ -95,7 +95,9 @@ var RouletteView = (function() {
                 lastRollResult: 0,
                 lastRolls: [0],
                 roulettePos: 0,
-                moneyResult: 0
+                moneyResult: 0,
+                countdownValue: 30,
+                countdownMax: 30
             }
         });
         
@@ -104,7 +106,16 @@ var RouletteView = (function() {
         this.$slots = $([]);
         this.initRouletteDOM(this.numbers);
         
-        /*this.ractive.observe('');*/
+        this.updateCountdownPos();
+        
+        $(document).resize(function() {
+            self.updateRoulettePos();
+            self.updateCountdownPos();
+        });
+        
+        /*this.ractive.observe('countdownValue', function(new_val, old_val, keypath) {
+            self.updateCountdownPos();
+        });*/
         
         this.ractive.on('betChange', function(ev) {
             var $radio = $(ev.node);
@@ -167,6 +178,47 @@ var RouletteView = (function() {
     
     RouletteView.prototype = {
         constructor: RouletteView,
+        updateCountdownPos: function(onlyText) {
+            if (onlyText == null) onlyText = false;
+            if (!onlyText) {
+                var width_percent = Math.floor(this.ractive.get('countdownValue') / this.ractive.get('countdownMax') * 100);
+                $('.roulette__countdown-fill').css('width', width_percent + '%');
+            }
+            $('.roulette__countdown-text').css('width', $('.roulette__countdown-bar').width());
+        },
+        animateCountdownValue: function(end_value) {
+            // TODO: handle interrupting animation
+            this._countdownAnimation = true;
+            var self = this;
+            var total_diff = end_value - this.ractive.get('countdownValue');
+            var done_diff = 0;
+            var percent_per_sec = /*total_diff/self.ractive.get('countdownMax') * */Math.sign(total_diff);
+            var time_passed = 0;
+            var last_time = +new Date();
+            var do_animate = function() {
+                var current_time = (+new Date());
+                var dt_seconds = (current_time - last_time) / 1000;
+                time_passed += dt_seconds;
+                last_time = current_time;
+                
+                //console.log(time_passed, dt_seconds);
+                if (time_passed < self.ractive.get('countdownMax') && Math.abs(done_diff) < Math.abs(total_diff)) {
+                    var duration = 1000 * (self.ractive.get('countdownMax') / 100);
+                    done_diff += percent_per_sec * dt_seconds;
+                    //console.log('Animating: ', remaining_diff ,percent_per_sec, duration, dt_seconds);
+                    self.ractive.set('countdownValue', self.ractive.get('countdownValue') + percent_per_sec * dt_seconds);
+                    $('.roulette__countdown-fill').transit({
+                        width: self.ractive.get('countdownValue') / self.ractive.get('countdownMax') * 100 + '%'
+                    }, duration, 'linear', do_animate);
+                    self.updateCountdownPos(true);
+                } else {
+                    self.ractive.set('countdownValue', end_value);
+                    self.updateCountdownPos();
+                    self._countdownAnimation = false;
+                }
+            }
+            do_animate();
+        },
         getBetResult: function(type, amount, roll_result) {
             bet_type = bet_type.toString().trim();
             if (!isFinite(roll_result)) {
@@ -290,16 +342,14 @@ var RouletteView = (function() {
 
 var View = (function() {
     function View() {
-        var socket = io();
+        this.socket = io();
         
-        socket.on('data', function(new_data) {
+        this.socket.on('data', function(new_data) {
             $.extend(true, DATA, new_data);
         });
         
-        this.chatView = new ChatView(socket);
-        this.rouletteView = new RouletteView(socket);
+        this.chatView = new ChatView(this.socket);
         window.chatView = this.chatView;
-        window.rouletteView = this.rouletteView;
         console.log('Main view initialized!');
     }
     
@@ -313,7 +363,14 @@ var View = (function() {
 var Controllers = {
     'all': {
         onInit: function() {
-            var view = new View();
+            this.view = new View();
+        }
+    },
+    'roulette': {
+        onInit: function() {
+            var socket = Controllers.all.view.socket;
+            this.rouletteView = new RouletteView(socket);
+            window.rouletteView = this.rouletteView;
         }
     }
 };

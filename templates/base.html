@@ -15,7 +15,7 @@
 	<link rel="stylesheet" href="assets/css/main.css" />
 </head>
 
-<body>
+<body data-controller="{{#block 'controller'}}{{/block}}">
 	<script>
 		var DATA = JSON.parse('{{{jsonify $clientData}}}');
 	</script>
@@ -30,9 +30,33 @@
 
 	{{#block 'page'}}
 	<div class="main">
-		<div class="top-panel pure-g">
+		<div class="top-panel">
 			{{#block 'topPanel'}}
-			Проиграйжопу v0.1 (dev)
+			<div class="header-wrapper">
+				<div class="logo"><a href="/"><img class="logo-image" src="/assets/img/logo200x25.png"></a></div>
+				<div class="mainmenu pure-menu pure-menu-horizontal">
+					<ul class="tabs pure-menu-list">
+						<li class="tabs__tab {{#if currentPage.path.[1] === ''}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/">Рулетка</a></li>
+						<li class="tabs__tab {{#if currentPage.path.[1] === 'deposit'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/deposit">Пополнить баланс</a></li>
+						<li class="tabs__tab {{#if currentPage.path.[1] === 'withdraw'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/withdraw">Вывести</a></li>
+						<li class="tabs__tab {{#if currentPage.path.[1] === 'info'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/info">Справка</a></li>
+					</ul>
+					
+					{{#if me.loggedIn != true}}
+					<div class="auth-steam"><a href="/auth/steam" class="auth-steam__link"><img src="https://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_large_noborder.png"></a></div>
+					{{else}}
+					<div class="miniprofile">
+						<div class="miniprofile__column miniprofile__column--left">
+							<img class="miniprofile__avatar" src="{{ me.avatars.steamAvatarMedium }}">
+						</div>
+						<div class="miniprofile__column miniprofile__column--right">
+							<span class="miniprofile__name">{{ me.name }}</span><br>
+							<span class="miniprofile__balance">Баланс: {{ me.balance.money }}</span>		
+						</div>
+					</div>
+					{{/if}}
+				</div>
+			</div>
 			{{/block}}
 		</div>
 		<div class="left-panel">

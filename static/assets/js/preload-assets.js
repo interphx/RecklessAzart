@@ -1,6 +1,10 @@
-(function() {
+$(document).ready(function() {
+    var loaded = [];
+    
     function preloadImage(url) {
-        (new Image()).src = url;
+        var img = new Image();
+        img.src = url;
+        loaded.push(img);
     }
     
     function preloadAll(resources) {
@@ -14,4 +18,4 @@
         '/assets/img/cross_highlighted16x16.png'
     ]);
     
-})();
+});

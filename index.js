@@ -134,6 +134,10 @@ io.use(function(socket, next) {
 // Initializing front-end serving
 app.use(express.static(rootpath('static')));
 
+function getPathArrayFromRequest(req) {
+    return [req.get('host')].concat(req.path.replace(/(^[\/]+|[\/]+$)/g, '').split('/'));
+}
+
 app.get('/', function(req, res) {
     chatServer.fetchLatest(function(err, results) {
         console.log('REQ.USER: ', req.user);
@@ -141,6 +145,59 @@ app.get('/', function(req, res) {
             console.log('Weird user object: ', req.user);
         }
         res.send(renderTemplate('index', {
+            currentPage: {
+                path: getPathArrayFromRequest(req)
+            },
+            messages: results,
+            // TODO: This is ugly. Make everything be forwarded to client-side DATA by default, use $clientData field to modify this behaviour (exclude/include/only, merge)
+            me: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false },
+            $clientData: {
+                user: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false }
+            }
+        }));
+    });
+});
+
+app.get('/deposit', function(req, res) {
+    console.log('DEPOSIT, path === ', getPathArrayFromRequest(req));
+    console.log('DEPOSIT, original path string === ', req.path);
+    chatServer.fetchLatest(function(err, results) {
+        res.send(renderTemplate('deposit', {
+            currentPage: {
+                path: getPathArrayFromRequest(req)
+            },
+            messages: results,
+            // TODO: This is ugly. Make everything be forwarded to client-side DATA by default, use $clientData field to modify this behaviour (exclude/include/only, merge)
+            me: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false },
+            $clientData: {
+                user: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false }
+            }
+        }));
+    });
+});
+
+app.get('/withdraw', function(req, res) {
+    chatServer.fetchLatest(function(err, results) {
+        res.send(renderTemplate('withdraw', {
+            currentPage: {
+                path: getPathArrayFromRequest(req)
+            },
+            messages: results,
+            // TODO: This is ugly. Make everything be forwarded to client-side DATA by default, use $clientData field to modify this behaviour (exclude/include/only, merge)
+            me: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false },
+            $clientData: {
+                user: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false }
+            }
+        }));
+    });
+});
+
+app.get('/info', function(req, res) {
+    chatServer.fetchLatest(function(err, results) {
+        res.send(renderTemplate('info', {
+            currentPage: {
+                path: getPathArrayFromRequest(req)
+            },
             messages: results,
             // TODO: This is ugly. Make everything be forwarded to client-side DATA by default, use $clientData field to modify this behaviour (exclude/include/only, merge)
             me: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false },

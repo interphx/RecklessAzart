@@ -8,7 +8,7 @@ input[type=text], input[type=month], input[type=time], input[type=datetime], inp
     display: inline-block;
     border: 1px solid #ccc;
     box-shadow: inset 0 1px 3px #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
     vertical-align: middle;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -89,8 +89,8 @@ input[type="checkbox"].toggle:checked + label {
     background: #ddd;
     border: 1px solid #ccc;
     border-left: none;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
     padding: 0.5em 0.6em;
     box-sizing: border-box;
     vertical-align: middle;
@@ -98,7 +98,7 @@ input[type="checkbox"].toggle:checked + label {
 }
 
 .pure-button {
-	border-radius: 4px;
+	border-radius: 6px;
 }
 
 .btn-group-inline {
@@ -120,13 +120,13 @@ input[type="checkbox"].toggle:checked + label {
 }
 
 .btn-group .pure-button:first-child {
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
 }
 
 .btn-group .pure-button:last-child {
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
 }
 
 .btn-group-divided .pure-button:not(:last-child) {
@@ -152,7 +152,7 @@ input[type="checkbox"].toggle:checked + label {
 	padding: 1em;
 	background: #f8f8f8;
 	border: 1px solid #ddd;
-	border-radius: 4px;
+	border-radius: 6px;
 }
 
 .top-panel {
@@ -169,7 +169,7 @@ input[type="checkbox"].toggle:checked + label {
 	height: 100%;
 	float: left;
 	overflow: hidden;
-	border-bottom-right-radius: 4px;
+	border-bottom-right-radius: 6px;
 	/*border-right: 1px solid red;*/
 }
 
@@ -180,13 +180,25 @@ input[type="checkbox"].toggle:checked + label {
 	/*border: 1px solid green;*/
 }
 
+.header-wrapper {
+	height: 100%;
+	overflow: hidden;
+	width: 80%;
+	max-width: 1170px;
+	margin: 0 auto;
+}
+
 .logo {
 	width: 25%;
-	/*height: 64px;*/
+	height: 100%;
+	padding-top: 0.4em; /* To center the logo */
 	text-align: center;
-	padding-top: 0.25em;
 	font-size: 1.6em;
 	float: left;
+}
+
+.logo-image {
+	max-width: 200px;
 }
 
 .tabs {
@@ -243,13 +255,6 @@ input[type="checkbox"].toggle:checked + label {
 	height: 100%;
 }
 
-.mainmenu-toggle {
-    float: right;
-    width: 1.2em;
-    height: 1.2em;
-    cursor: pointer;
-}
-
 /* CLEARABLE INPUTS */
 
 input[data-clearable] {
@@ -279,8 +284,10 @@ input[data-clearable]::-ms-clear {display: none; width:0; height:0;}
 	float: right;
 	max-width: 40%;
 	height: 100%;
-	overflow: auto;
+	overflow: hidden;
 	padding: 0.25em;
+	padding-top: 0.1em;
+	line-height: 1.13;
 }
 
 .miniprofile__column {
@@ -296,7 +303,7 @@ input[data-clearable]::-ms-clear {display: none; width:0; height:0;}
 .miniprofile__avatar {
 	width: 32px;
 	height: 32px;
-	border-radius: 4px;
+	border-radius: 6px;
 }
 
 /* CHAT */
@@ -403,7 +410,7 @@ input[data-clearable]::-ms-clear {display: none; width:0; height:0;}
 .roulette__bet {
 	text-align: center;
 	border: 1px solid #ddd;
-	border-radius: 4px;
+	border-radius: 6px;
 	padding: 1em;
 	margin: 1em;
 }
@@ -436,7 +443,7 @@ input[data-clearable]::-ms-clear {display: none; width:0; height:0;}
 	right: 0;
 	bottom: 0;
 	left: 0;
-	box-shadow: inset 0 0 12px #000000;
+	box-shadow: inset 0 3px 10px #000000;
 	border-radius: 40px;
 	z-index: 10;
 }
@@ -445,25 +452,11 @@ input[data-clearable]::-ms-clear {display: none; width:0; height:0;}
 	overflow: visible;
 	white-space: nowrap;
 	text-align: left;
-	/*width: 7770px;*/
-	/*border-radius: 4px;*/
 }
-/*
-.roulette__slots-wrapper-right {
-	display: inline-block;
-	right: -50%;
-	position: relative;
-}
-
-.roulette__slots-wrapper-left {
-	position: relative;
-	left: -50%;
-}*/
 
 .roulette__slot {
 	display: inline-block;
 	width: 80px;
-	/*height: 24px;*/
 	font-size: 1.6em;
 	color: #EEE;
 	text-align: center;
@@ -508,4 +501,47 @@ input[data-clearable]::-ms-clear {display: none; width:0; height:0;}
 
 .roulette__result-number {
 	color: #333;
+}
+
+.roulette__countdown {
+	width: 95%;
+	margin: 1em auto;
+	border-radius: 6px;
+	padding: 0;
+	overflow: hidden;
+	position: relative;
+}
+
+.roulette__countdown-shadow {
+	position: absolute;
+	z-index: 10;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	box-shadow: inset rgba(0, 0, 0, 0.33) 0px 2px 5px 0px;
+}
+
+.roulette__countdown-bar {
+	background: #eee;
+	margin: 0.5em auto 0.5em auto;
+	padding: 1em 0;
+	/*width: 80%;*/
+	margin: 0;
+	text-align: center;
+	overflow: hidden;
+	position: relative;
+}
+
+.roulette__countdown-fill {
+	margin: 0;
+	background: #BD524D;
+	color: #fff;
+	width: 100%;
+	padding: 1em 0;
+	position: absolute;
+	left: 0;
+	top: 0;
+	overflow: hidden;
+	transition: width 1s;
 }
