@@ -3,7 +3,7 @@
 	<div class="roulette__balance">Balance: {{ me.balance.money }}</div>
 	<div class="roulette__result">Result: {{ rollResult }} Msg: {{ resultMessage }}</div>-->
 	{{#if me.loggedIn != true}}
-	<div class="promobox"><p class="promotext"><a href="#">Войдите через Steam</a> сейчас и получите 500 кредитов бесплатно.</p></div>
+	<div class="promobox"><p class="promotext"><a href="/auth/steam">Войдите через Steam</a> сейчас и получите 500 кредитов бесплатно.</p></div>
 	{{/if}}
 	<div class="roulette__countdown">
 		<div class="roulette__countdown-shadow"></div>
@@ -19,6 +19,12 @@
 		</div>
 	</div>
 	<div class="roulette__result-chevron"></div>
+	<div class="roulette__last-results">
+		{{#each lastRolls}}
+			<div class="
+				roulette__last-result-item roulette_last-result-item--{{getNumberType(this)}}">{{this}}</div>
+		{{/each}}
+	</div>
 	<div class="roulette__result">
 		
 		<p class="roulette__result-text">Рулетка остановилась на числе <span class="roulette__result-number">{{lastRollResult}}</span></p>

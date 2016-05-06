@@ -241,10 +241,13 @@ var RouletteView = (function() {
                 return -amount;
             }
         },
+        getNumberType: function(number) {
+            if (number === 0) return 'zero';
+            if (number < this.blacksStartFrom) return 'red';
+            return 'black';
+        },
         getNumberCSSClasses: function(number) {
-            if (number === 0) return ['roulette__slot--zero'];
-            if (number < this.blacksStartFrom) return ['roulette__slot--red'];
-            return ['roulette__slot--black'];
+            return 'roulette__slot--' + this.getNumberType(number);
         },
         initRouletteDOM: function(numbers) {
             var repetitions = 3;

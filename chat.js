@@ -27,8 +27,10 @@ var ChatServer = (function(){
     ChatServer.prototype = {
         constructor: ChatServer,
         addMessage: function(author, text, cb) {
+            console.log(author.avatars.steamAvatarSmall);
             ChatEntry.insert({
                 authorName: author.name,
+                authorAvatar: author.avatars.steamAvatarSmall,
                 text: text,
                 createdAt: util.now()
             }, cb || util.noop);

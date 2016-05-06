@@ -75,7 +75,7 @@ module.exports = {
                 var steamData = {
                     username: profile._json.displayname || profile._json.personaname,
                     identifier: identifier,
-                    avatarSmall: profile._json.avatarsmall,
+                    avatarSmall: profile._json.avatar,
                     avatarMedium: profile._json.avatarmedium,
                     avatarFull: profile._json.avatarfull
                 };

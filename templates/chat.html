@@ -2,12 +2,15 @@
 	<ul class="chat-messages">
 	{{#each messages}}
 		<li class="chat-message">
-			<span class="chat-message__name">{{authorName}}</span>: <span class="chat-message__text">{{text}}</span>
+			<div class="chat-message__avatar">
+				<img class="chat-message__avatar-picture" src="{{authorAvatar}}">
+			</div>
+			<div class="chat-message__name">{{authorName}}<span class="chat-message__colon">:</span></div> <div class="chat-message__text">{{text}}</div>
 		</li>
 	{{/each}}
 	</ul>
-	<div class="chat-form pure-form">
-		<input type="text" value="{{chatMessage}}" on-enter="chatSend" placeholder="Введите текст сообщения..." class="chat-form__text">
+	<div class="chat-form">
+		<input type="text" value="{{chatMessage}}" on-enter="chatSend" placeholder="{{#if me.loggedIn}}Введите текст сообщения...{{else}}Войдите через Steam, чтобы пользоваться чатом{{/if}}" {{#if me.loggedIn == false}}disabled{{/if}} class="chat-form__text">
 		<!--<input type="button" on-click="chatSend" class="chat-form__submit" value="Отправить">-->
 	</div>
 </div>
