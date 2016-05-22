@@ -49,7 +49,7 @@ module.exports = {
                     steam: identifier
                 },
                 balance: {
-                    money: 0
+                    money: 100000
                 },
                 roles: ['user']
             });
