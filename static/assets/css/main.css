@@ -16,7 +16,9 @@ input[type=text], input[type=month], input[type=time], input[type=datetime], inp
 }
 
 input[disabled] {
-	color: #777;
+    background: #F0F0F0;
+    cursor: not-allowed;
+    transition: none;
 }
 
 a {
@@ -118,6 +120,10 @@ input[type="checkbox"].toggle:checked + label {
     float: left;
 }
 
+.btn-group .pure-button[disabled] {
+    border-width: 1px;
+}
+
 .btn-group .pure-button:not(:first-child):not(:last-child) {
     margin-left: 0;
     margin-right: 0;
@@ -139,6 +145,10 @@ input[type="checkbox"].toggle:checked + label {
 
 .pure-button {
     background: transparent;
+    border: 1px solid #4d4d4d;
+}
+
+.pure-button[disabled] {
     border: 1px solid #4d4d4d;
 }
 
@@ -261,15 +271,15 @@ input[type="checkbox"].toggle:checked + label {
 
 /* CLEARABLE INPUTS */
 
-input[data-clearable] {
+input[data-clearable]:not([disabled]) {
   background: #fff url(/assets/img/cross16x16.png) no-repeat right -16px center;
   padding-right: 24px;
   transition: background 0.4s;
 }
-input[data-clearable].clearable-x  {
+input[data-clearable]:not([disabled]).clearable-x  {
 	background-position: right 5px center;
 }
-input[data-clearable].clearable-hover-x {
+input[data-clearable]:not([disabled]).clearable-hover-x {
 	cursor: pointer;
 	background-image: url(/assets/img/cross_highlighted16x16.png);
 }
@@ -594,7 +604,10 @@ input[data-clearable]::-ms-clear {display: none; width:0; height:0;}
 	border-radius: 6px;
 	display: inline-block;
 	width: 48px;
-	height: 48px;
+	height: 36px;
+    color: #EEE;
+    padding-top: 0.5em;
+    padding-bottom: 0;
 	overflow: hidden;
 }
 .roulette__last-result-item--red {

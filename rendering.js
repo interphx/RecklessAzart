@@ -4,6 +4,8 @@ var config = require('./config');
 var util = require('./util');
 
 var hbs = (function() {
+    var CLIENT_ONLY = config.rendering.clientOnly;
+    
     var handlebars = require('handlebars').default;
     var hblayouts = require('handlebars-layouts');
     
@@ -26,7 +28,7 @@ var hbs = (function() {
     //var cond_operator_regex = /{{\s*#\s*if\s*([^\{\}\!\=\<\>\&\|]+)\s*([\!\=\<\>\&\|]+)\s*([^\{\}]+)\s*}}/ig;
     //var cond_closed_operator_regex = /{{\s*#\s*if\s*([^\{\}\!\=\<\>\&\|]+)\s*([\!\=\<\>\&\|]+)\s*([^\{\}]+)\s*}}(.*){{\s*\/\s*if\s*}}/ig;
     var cond_closed_operator_regex = /{{\s*#\s*if\s*([^\{\}\!\=\<\>\&\|]+)\s*([\!\=\<\>\&\|]+)\s*([^\{\}]+)\s*}}([\s\S]*?){{\s*\/\s*if\s*}}/ig;
-    function replaceOperatorsToHandlebarsHelpers(s, _depth) {
+    function ractive2handlebars(s, _depth) {
         if (_depth == null) _depth = 0;
         if (_depth >= 30) {
             console.log('FUCK! TEMPLATE HANDLEBARS REPLACER REACHED 30 DEPTH!');
@@ -52,7 +54,7 @@ var hbs = (function() {
             if (!helper) return match;
             return '{{#' + helper + ' ' + lhs + ' ' + rhs + '}}' + body + '{{/' + helper +  '}}';
         });
-        if (result !== s) return replaceOperatorsToHandlebarsHelpers(result, _depth + 1);
+        if (result !== s) return ractive2handlebars(result, _depth + 1);
         //console.log(result);
         return result;
     }
@@ -97,9 +99,14 @@ var hbs = (function() {
             loadTemplate(nested_template_name, _loaded);
         }
         
-        loaded_templates[template_name] = file_contents;
-        compiled_templates[template_name] = handlebars.compile(file_contents);
-        handlebars.registerPartial(template_name, replaceOperatorsToHandlebarsHelpers(file_contents));
+        loaded_templates[template_name] = file_contents.replace(/\{\{\s*\>\s*([a-zA-Z0-9\_\-\.\!\?]+)\s*\}\}/ig, function(match, partial) {
+            if (CLIENT_ONLY.indexOf(partial) >= 0) return '';
+            return match;
+        });
+        if (CLIENT_ONLY.indexOf(template_name) < 0) {
+            compiled_templates[template_name] = handlebars.compile(file_contents);
+        }
+        handlebars.registerPartial(template_name, ractive2handlebars(file_contents));
         
         // TODO: Probably change this list to map
         if (file_contents.indexOf('{{#block') < 0      &&
@@ -147,7 +154,7 @@ var hbs = (function() {
     
     function render(template, data) {
         data = data || {};
-        return handlebars.compile(replaceOperatorsToHandlebarsHelpers(template))(prepareData(data));
+        return handlebars.compile(ractive2handlebars(template))(prepareData(data));
     }
     
     return {
@@ -164,7 +171,7 @@ var hbs = (function() {
                 console.log('Reloading template ', template_name);
                 loadTemplate(template_name);
             }
-            //return replaceOperatorsToHandlebarsHelpers(compiled_templates[template_name])(prepareData(data));
+            //return ractive2handlebars(compiled_templates[template_name])(prepareData(data));
             return render(loaded_templates[template_name], data);
         },
         setDefault: function(name, value) {

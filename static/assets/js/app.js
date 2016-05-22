@@ -81,7 +81,7 @@ var RouletteView = (function() {
         this.slotWidth = 80;
         
         this.$container = $('.right-panel');
-        this.socket = socket;
+        this.socket = io('/roulette');
         this.ractive = new Ractive({
             el: this.$container[0],
             partials: loaded_templates,
@@ -93,11 +93,17 @@ var RouletteView = (function() {
                 betType: [],
                 lastSubmittedBetAmount: 0,
                 lastRollResult: 0,
-                lastRolls: [0],
+                lastRollsKeepCount: 3,
+                lastRolls: DATA.lastRolls || [],
                 roulettePos: 0,
                 moneyResult: 0,
-                countdownValue: 30,
-                countdownMax: 30
+                countdownValue: DATA.timeBeforeRoll / 1000,
+                countdownMax: 30,
+                isCountingDown: true,
+                
+                getNumberType: function(number) {
+                    return self.getNumberType(number);
+                }
             }
         });
         
@@ -123,9 +129,11 @@ var RouletteView = (function() {
             var bet_type = self.ractive.get('betType');
             if (bet_type.length > 0) {
                 self.ractive.set('betType', [$radio.prop('value')]);
+                self.tryPlaceBet(self.getBetType(), self.getBetAmount());
+            } else {
+                self.tryRemoveBet();
             }
             
-            self.tryPlaceBet(self.getBetType(), self.getBetAmount());
         });
         
         this.ractive.on('changeBetAmount', function(ev) {
@@ -162,11 +170,22 @@ var RouletteView = (function() {
         
         this.socket.on('roll-result', function(roll_result) {
             self.ractive.set('lastRollResult', roll_result);
+            self.ractive.push('lastRolls', roll_result);
+            if (self.ractive.get('lastRolls').length > self.ractive.get('lastRollsKeepCount')) {
+                self.ractive.shift('lastRolls');
+            }
             var bet_type = self.getBetType();
             var money_result = self.getBetResult(self.getBetType(), self.getBetAmount(), roll_result);// TODO: Share roulette logic between server and client
             self.ractive.set('moneyResult', money_result);
         });
         
+        this.socket.on('time-before-roll', function(mseconds) {
+            self.ractive.set('countdownValue', mseconds / 1000);
+            self.updateCountdownPos();
+            if (self.ractive.get('isCountingDown')) {
+                self.animateCountdownValue(0);
+            }
+        });
         
         // TODO: move data gathering to separate utility class
         this.socket.on('data', function(){
@@ -174,6 +193,10 @@ var RouletteView = (function() {
                 self.ractive.set('user', DATA.user);
             }, 50);
         });
+        
+        if (this.ractive.get('isCountingDown')) {
+            this.animateCountdownValue(0);
+        }
     }
     
     RouletteView.prototype = {
@@ -220,7 +243,7 @@ var RouletteView = (function() {
             do_animate();
         },
         getBetResult: function(type, amount, roll_result) {
-            bet_type = bet_type.toString().trim();
+            type = type.toString().trim();
             if (!isFinite(roll_result)) {
                 console.log('Invalid roll result:', roll_result);
             }
@@ -247,7 +270,7 @@ var RouletteView = (function() {
             return 'black';
         },
         getNumberCSSClasses: function(number) {
-            return 'roulette__slot--' + this.getNumberType(number);
+            return ['roulette__slot--' + this.getNumberType(number)];
         },
         initRouletteDOM: function(numbers) {
             var repetitions = 3;
@@ -313,13 +336,13 @@ var RouletteView = (function() {
                 console.log('Invalid bet type:', type);
                 return;
             }
-            this.socket.emit('place-bet', {
+            this.socket.emit('bet-place', {
                 type: type,
                 amount: amount
             });
         },
         tryRemoveBet: function() {
-            this.socket.emit('remove-bet');
+            this.socket.emit('bet-remove');
         },
         getBetType: function() {
             var bet_type = this.ractive.get('betType');

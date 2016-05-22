@@ -22,7 +22,7 @@
 	<div class="roulette__last-results">
 		{{#each lastRolls}}
 			<div class="
-				roulette__last-result-item roulette_last-result-item--{{getNumberType(this)}}">{{this}}</div>
+				roulette__last-result-item roulette__last-result-item--{{getNumberType(this)}}">{{this}}</div>
 		{{/each}}
 	</div>
 	<div class="roulette__result">
@@ -39,18 +39,18 @@
             <div class="roulette__balance bigtext">Ваш баланс: {{ me.balance.money }}</div>
         </div>-->
 		<div>
-			<div class="instruction">Укажите сумму ставки</div>
+			<div class="instruction">Укажите сумму ставки {{#if betType.length > 0}}(отмените ставку, чтобы изменить сумму){{/if}}</div>
             <div class="roulette__bet-sum">
-                <input type="text" class="postfixed" value="{{betAmount}}" data-clearable="0"><span class="postfix">очков</span>
+                <input type="text" class="postfixed" value="{{betAmount}}" data-clearable="0" disabled="{{betType.length > 0}}"><span class="postfix">очков</span>
             </div>
             <div class="roulette__bet-controls btn-group btn-group-divided btn-group-inline">
-                <button class="pure-button">Повторить</button>
-                <button class="pure-button" on-click="changeBetAmount" data-amount="+1">+1</button>
-                <button class="pure-button" on-click="changeBetAmount" data-amount="+10">+10</button>
-                <button class="pure-button" on-click="changeBetAmount" data-amount="+100">+100</button>
-                <button class="pure-button" on-click="changeBetAmount" data-amount="+1000">+1000</button>
-                <button class="pure-button" on-click="changeBetAmount" data-amount="/2">1/2</button>
-                <button class="pure-button" on-click="changeBetAmount" data-amount="max">Максимум</button>
+                <button class="pure-button" disabled="{{betType.length > 0}}">Повторить</button>
+                <button class="pure-button" on-click="changeBetAmount" data-amount="+1" disabled="{{betType.length > 0}}">+1</button>
+                <button class="pure-button" on-click="changeBetAmount" data-amount="+10" disabled="{{betType.length > 0}}">+10</button>
+                <button class="pure-button" on-click="changeBetAmount" data-amount="+100" disabled="{{betType.length > 0}}">+100</button>
+                <button class="pure-button" on-click="changeBetAmount" data-amount="+1000" disabled="{{betType.length > 0}}">+1000</button>
+                <button class="pure-button" on-click="changeBetAmount" data-amount="/2" disabled="{{betType.length > 0}}">1/2</button>
+                <button class="pure-button" on-click="changeBetAmount" data-amount="max" disabled="{{betType.length > 0}}">Максимум</button>
             </div>
             <div class="instruction">Сделайте ставку</div>
             <div class="hint">Вы узнаете свой результат после вращения рулетки.</div>

@@ -13,6 +13,7 @@ var BaseModel = (function() {
         constructor: BaseModel,
         $_errors: [],
         persist: function(cb) {
+            cb = cb || util.noop;
             var self = this;
             if (!this._id) {
                 return this.constructor.insert(this, cb);

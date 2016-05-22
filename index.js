@@ -152,6 +152,8 @@ app.get('/', function(req, res) {
             // TODO: This is ugly. Make everything be forwarded to client-side DATA by default, use $clientData field to modify this behaviour (exclude/include/only, merge)
             me: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false },
             $clientData: {
+                timeBeforeRoll: rouletteServer.getTimeBeforeRoll(),
+                lastRolls: rouletteServer.lastRolls,
                 user: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false }
             }
         }));
@@ -245,6 +247,12 @@ var ChatServer = require('./chat').ChatServer;
 var chatServer = new ChatServer({
     io: io,
     latestCount: config.chat.latestCount || 7
+});
+
+var RouletteServer = require('./roulette-server').RouletteServer;
+
+var rouletteServer = new RouletteServer({
+    io: io
 });
 
 io.on('connection', function(socket) {
