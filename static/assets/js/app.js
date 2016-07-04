@@ -98,7 +98,7 @@ var RouletteView = (function() {
                 roulettePos: 0,
                 moneyResult: 0,
                 countdownValue: DATA.timeBeforeRoll / 1000,
-                countdownMax: 30,
+                countdownMax: 10, // TODO: Keep in sync with server-side
                 isCountingDown: true,
                 
                 getNumberType: function(number) {
@@ -174,6 +174,11 @@ var RouletteView = (function() {
             self.socket.emit('add-balance');
         });
         
+        // TODO: Duplicating code, merge /roulette/data with /data somehow
+        /*this.socket.on('data', function(new_data) {
+            console.log('NEW DATA:', new_data);
+            $.extend(true, DATA, new_data);
+        });*/
         
         this.socket.on('roll-result', function(roll_result) {
             self.ractive.set('lastRollResult', roll_result);
@@ -196,8 +201,16 @@ var RouletteView = (function() {
             }
         });
         
+        this.ractive.observe('user.balance.money', function(new_value) {
+            console.log('Money changed:',new_value);
+            $('.miniprofile__balance').html(new_value);
+        });
+        
+        // TODO: Duplicating code, merge /roulette/data with /data somehow
         // TODO: move data gathering to separate utility class
-        this.socket.on('data', function(){
+        this.socket.on('balance-data', function(new_data){
+            console.log(new_data);
+            $.extend(true, DATA, new_data);
             setTimeout(function(){
                 self.ractive.set('user', DATA.user);
             }, 50);
@@ -399,6 +412,10 @@ var RouletteView = (function() {
 var View = (function() {
     function View() {
         this.socket = io();
+        
+        this.socket.on('*', function() {
+            console.log('*', arguments);
+        });
         
         this.socket.on('data', function(new_data) {
             $.extend(true, DATA, new_data);

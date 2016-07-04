@@ -253,11 +253,15 @@ var RouletteServer = require('./roulette-server').RouletteServer;
 
 var rouletteServer = new RouletteServer({
     io: io,
-    lastRollsKeepCount: config.roulette.lastRollsRememberCount
+    lastRollsKeepCount: config.roulette.lastRollsRememberCount,
+    rollTime: config.roulette.rollTime
 });
 
 io.on('connection', function(socket) {
     console.log('Some fucker connected: ', socket.id);
+    if (socket.request.user) {
+        socket.request.user.setSocketInstance(socket);
+    }
     /*socket.on('chat-message', function(message) {
         if (!socket.request || !socket.request.user) {
             console.log('Something is wrong: we\'ve got request with no "user" property');

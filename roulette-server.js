@@ -14,7 +14,9 @@ var RouletteServer = (function(){
         this.lastRollsKeepCount = options.lastRollsKeepCount || 3;
         this.nextRollTime = null;
         
-        this.startCountdown(30 * 1000);
+        this.startCountdown(options.rollTime);
+        
+        this.sockets = {};
     }
     
     RouletteServer.prototype = {
@@ -28,16 +30,26 @@ var RouletteServer = (function(){
             }
             return result;
         },
+        getUserSocket: function(id) {
+            return this.sockets[id] || null;
+        },
         onClientConnected: function(socket) {
             var self = this;
             if (!socket.request.user) {
                 console.log('A guest tried to connect to /roulette');
                 return;
             }
+            
+            this.sockets[socket.request.user._id] = socket;
+
             self.io.to(socket.id).emit('time-before-roll', this.getTimeBeforeRoll());
             socket.on('bet-place', function(bet) {
                 if (['1-7', '0', '8-14'].indexOf(bet.type) < 0) return;
                 if (bet.amount > socket.request.user.balance.money) return;
+                
+                console.log(socket.id, socket.request.user.socket.id);
+                self.io.to(socket.id).emit('*', '*BET PLACED 1');
+                self.io.to(socket.request.user.socket.id).emit('*', '*BET PLACED 2');
                 
                 console.log('PLACED BET: ', socket.request.user.name, bet);
                 self.bets[socket.request.user._id] = {
@@ -108,7 +120,21 @@ var RouletteServer = (function(){
                     user.balance.money = user.balance.money || 0;
                     user.balance.money += bet_result;
                     user.persist();
-                    // TODO: Probably notify users on balance change or make clients poll it
+                    
+                    //console.log('SOCKET:', user._socket);
+                    //console.log('SOCKET conn:', user._socket.connected);
+                    var socket = self.getUserSocket(user._id);
+                    if (socket) {
+                        console.log('NOTIFYING...', socket.id);
+                        self.io.to(socket.id).emit('*', 'fooooooooooooooooooooooo');
+                        self.io.to(socket.id).emit('balance-data', {
+                            user: {
+                                balance: {
+                                    money: user.balance.money
+                                }
+                            }
+                        });
+                    }
                 });
             });
         },

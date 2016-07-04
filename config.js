@@ -8,6 +8,7 @@ module.exports = {
         clientOnly: ['roulette', 'chat']
     },
     roulette: {
+        rollTime: 10 * 1000,
         lastRollsRememberCount: 10
     },
     tradeOffers: {

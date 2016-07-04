@@ -244,7 +244,14 @@ var models = {
         properties: {
             loggedIn: {
                 get: function() { return true; }
+            },
+            socket: {
+                get: function() { return this.getSocketInstance(); }
             }
+        },
+        
+        static: {
+            sockets: {}
         },
         
         methods: {
@@ -256,6 +263,16 @@ var models = {
                     exclude: ['password', 'password_hash', 'password_salt', 'salt'],
                     inlcude: ['loggedIn']
                 });
+            },
+            setSocketInstance: function(socket) {
+                models.User.sockets[this._id] = socket;
+            },
+            getSocketInstance: function() {
+                var socket = models.User.sockets[this._id];
+                if (socket && socket.connected) {
+                    return socket;
+                }
+                return null;
             }
         }
     }),
