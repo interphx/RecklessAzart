@@ -7,6 +7,9 @@ module.exports = {
         cacheTemplates: false,
         clientOnly: ['roulette', 'chat']
     },
+    roulette: {
+        lastRollsRememberCount: 10
+    },
     tradeOffers: {
         pollInterval: 10 * 1000,
         cancelTime: 600 * 1000 // Отменяем все офферы старее 10 минут

@@ -598,7 +598,25 @@ input[data-clearable]::-ms-clear {display: none; width:0; height:0;}
 	width: 40%;
 	margin: 1em auto;
 	text-align: center;
+	position: relative;
 }
+
+/* TODO: Make beautiful or remove */
+/*
+.roulette__last-results:after {
+    content: ' ';
+    height: 100%;
+    left: 35%;
+    right: 35%;
+    position: absolute;
+    background: -webkit-linear-gradient(left, 
+		#f8f8f8 5%, 
+		rgba(0,0,0,0) 20%, 
+		rgba(0,0,0,0) 80%, 
+		#f8f8f8 95%
+	);
+}*/
+
 .roulette__last-result-item {
 	font-size: 1.2em;
 	border-radius: 6px;

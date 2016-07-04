@@ -93,7 +93,7 @@ var RouletteView = (function() {
                 betType: [],
                 lastSubmittedBetAmount: 0,
                 lastRollResult: 0,
-                lastRollsKeepCount: 3,
+                lastRollsKeepCount: 10,
                 lastRolls: DATA.lastRolls || [],
                 roulettePos: 0,
                 moneyResult: 0,
@@ -107,6 +107,13 @@ var RouletteView = (function() {
             }
         });
         
+        // Animation
+        this.animationHandles = {
+            countdown: null
+        };
+        this._resetAnimations = [];
+        
+        // HTML Initialization
         this.$wheelContainer = this.$container.find('.roulette__wheel-container');
         this.$wheel = this.$container.find('.roulette__wheel');
         this.$slots = $([]);
@@ -180,10 +187,12 @@ var RouletteView = (function() {
         });
         
         this.socket.on('time-before-roll', function(mseconds) {
+            console.log('BEFOREROLL: ', mseconds);
             self.ractive.set('countdownValue', mseconds / 1000);
             self.updateCountdownPos();
             if (self.ractive.get('isCountingDown')) {
-                self.animateCountdownValue(0);
+                self.resetAnimation(self.animationHandles.countdown);
+                self.animationHandles.countdown = self.animateCountdownValue(0);
             }
         });
         
@@ -195,7 +204,8 @@ var RouletteView = (function() {
         });
         
         if (this.ractive.get('isCountingDown')) {
-            this.animateCountdownValue(0);
+            this.resetAnimation(this.animationHandles.countdown);
+            this.animationHandles.countdown = this.animateCountdownValue(0);
         }
     }
     
@@ -209,7 +219,14 @@ var RouletteView = (function() {
             }
             $('.roulette__countdown-text').css('width', $('.roulette__countdown-bar').width());
         },
-        animateCountdownValue: function(end_value) {
+        
+        resetAnimation: function(handle) {
+            if (handle != null && this._resetAnimations.indexOf(handle) < 0) {
+                this._resetAnimations.push(handle);
+            }
+        },
+        
+        animateCountdownValue: function(end_value) {            
             // TODO: handle interrupting animation
             this._countdownAnimation = true;
             var self = this;
@@ -218,7 +235,17 @@ var RouletteView = (function() {
             var percent_per_sec = /*total_diff/self.ractive.get('countdownMax') * */Math.sign(total_diff);
             var time_passed = 0;
             var last_time = +new Date();
+            
+            var animation_handle = Math.random().toString() + '_' + (+new Date()).toString();
+            
             var do_animate = function() {
+                var idx = self._resetAnimations.indexOf(animation_handle);
+                if (idx >= 0) {
+                    console.log(animation_handle);
+                    self._resetAnimations.splice(idx, 1);
+                    return;
+                }
+                
                 var current_time = (+new Date());
                 var dt_seconds = (current_time - last_time) / 1000;
                 time_passed += dt_seconds;
@@ -241,9 +268,12 @@ var RouletteView = (function() {
                 }
             }
             do_animate();
+            
+            return animation_handle;
         },
         getBetResult: function(type, amount, roll_result) {
-            type = type.toString().trim();
+            
+            type = type != null ? type.toString().trim() : '';
             if (!isFinite(roll_result)) {
                 console.log('Invalid roll result:', roll_result);
             }

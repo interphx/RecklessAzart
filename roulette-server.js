@@ -34,6 +34,7 @@ var RouletteServer = (function(){
                 console.log('A guest tried to connect to /roulette');
                 return;
             }
+            self.io.to(socket.id).emit('time-before-roll', this.getTimeBeforeRoll());
             socket.on('bet-place', function(bet) {
                 if (['1-7', '0', '8-14'].indexOf(bet.type) < 0) return;
                 if (bet.amount > socket.request.user.balance.money) return;
@@ -52,7 +53,7 @@ var RouletteServer = (function(){
         },
         startCountdown: function(time) {
             this.nextRollTime = util.now() + time;
-            this.io.emit('time-before-roll', time);
+            this.io.emit('time-before-roll', this.getTimeBeforeRoll());
             var self = this;
             setTimeout(function() {
                 self.doRoll(14);
@@ -86,8 +87,8 @@ var RouletteServer = (function(){
             }
         },
         handleBets: function(roll_result) {
-            var userids = Object.keys(this.bets);
             var self = this;
+            var userids = Object.keys(this.bets).filter(function(key) { return !!self.bets[key]; });
             
             console.log('ROLLED', roll_result, ', HANDLING BETS...');
             userids.forEach(function(userid) {

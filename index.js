@@ -252,7 +252,8 @@ var chatServer = new ChatServer({
 var RouletteServer = require('./roulette-server').RouletteServer;
 
 var rouletteServer = new RouletteServer({
-    io: io
+    io: io,
+    lastRollsKeepCount: config.roulette.lastRollsRememberCount
 });
 
 io.on('connection', function(socket) {
