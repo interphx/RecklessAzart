@@ -135,6 +135,10 @@ var RouletteView = (function() {
             
             var bet_type = self.ractive.get('betType');
             if (bet_type.length > 0) {
+                if (self.ractive.get('betAmount') < 1) {
+                    alert('Сначала нужно указать сумму ставки!');
+                    return;
+                }
                 self.ractive.set('betType', [$radio.prop('value')]);
                 self.tryPlaceBet(self.getBetType(), self.getBetAmount());
             } else {
@@ -189,6 +193,7 @@ var RouletteView = (function() {
             var bet_type = self.getBetType();
             var money_result = self.getBetResult(self.getBetType(), self.getBetAmount(), roll_result);// TODO: Share roulette logic between server and client
             self.ractive.set('moneyResult', money_result);
+            self.unbet();
         });
         
         this.socket.on('time-before-roll', function(mseconds) {
@@ -203,7 +208,9 @@ var RouletteView = (function() {
         
         this.ractive.observe('user.balance.money', function(new_value) {
             console.log('Money changed:',new_value);
-            $('.miniprofile__balance').html(new_value);
+            if (new_value) {
+                $('.miniprofile__balance').html('Баланс: ' + new_value.toString());
+            }
         });
         
         // TODO: Duplicating code, merge /roulette/data with /data somehow
@@ -383,6 +390,9 @@ var RouletteView = (function() {
                 type: type,
                 amount: amount
             });
+        },
+        unbet: function() {
+            this.ractive.set('betType', []);
         },
         tryRemoveBet: function() {
             this.socket.emit('bet-remove');

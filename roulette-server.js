@@ -126,7 +126,6 @@ var RouletteServer = (function(){
                     var socket = self.getUserSocket(user._id);
                     if (socket) {
                         console.log('NOTIFYING...', socket.id);
-                        self.io.to(socket.id).emit('*', 'fooooooooooooooooooooooo');
                         self.io.to(socket.id).emit('balance-data', {
                             user: {
                                 balance: {

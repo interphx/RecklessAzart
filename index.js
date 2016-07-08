@@ -259,7 +259,7 @@ var rouletteServer = new RouletteServer({
 
 io.on('connection', function(socket) {
     console.log('Some fucker connected: ', socket.id);
-    if (socket.request.user) {
+    if (socket.request.user && socket.request.user.logged_in) {
         socket.request.user.setSocketInstance(socket);
     }
     /*socket.on('chat-message', function(message) {
