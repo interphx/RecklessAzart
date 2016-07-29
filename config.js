@@ -5,7 +5,7 @@ module.exports = {
     steamAPIKey: '4D817705DDA90770247DE0E19BF8D80A',
     rendering: {
         cacheTemplates: false,
-        clientOnly: ['roulette', 'chat']
+        clientOnly: ['roulette', 'chat', 'deposit', 'withdraw']
     },
     roulette: {
         rollTime: 10 * 1000,

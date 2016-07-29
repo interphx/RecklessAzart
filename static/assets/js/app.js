@@ -30,6 +30,16 @@ var getTemplate = (function() {
 
 var loaded_templates = getTemplate.loaded_templates;
 
+var DepositView = (function() {
+    function DepositView(socket) {
+        this.socket = socket;
+        this.ractive = new Ractive({
+            
+        });
+    }
+    
+})();
+
 var ChatView = (function() {
     function ChatView(socket) {
         var self = this;
@@ -135,8 +145,12 @@ var RouletteView = (function() {
             
             var bet_type = self.ractive.get('betType');
             if (bet_type.length > 0) {
+                if (!DATA.user || !DATA.user.loggedIn) {
+                    alert('Авторизуйтесь через Steam, чтобы сделать ставку.');
+                    return;
+                }
                 if (self.ractive.get('betAmount') < 1) {
-                    alert('Сначала нужно указать сумму ставки!');
+                    alert('Сначала нужно указать сумму ставки.');
                     return;
                 }
                 self.ractive.set('betType', [$radio.prop('value')]);

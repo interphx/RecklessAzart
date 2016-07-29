@@ -1,0 +1,9 @@
+<script>
+    var data = {{{ JSON.stringify(clientData) }}};
+</script>
+
+{{#each clientTemplates}}
+    <script type="text/x-template" data-define-template="{{name}}">
+    {{{text}}}
+    </script>
+{{/each}}

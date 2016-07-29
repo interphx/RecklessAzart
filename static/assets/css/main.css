@@ -637,3 +637,21 @@ input[data-clearable]::-ms-clear {display: none; width:0; height:0;}
 .roulette__last-result-item--zero {
 	background: #67AB59;
 }
+
+/* INVENTORY (DEPOSIT & WITHDRAW) */
+.inventory {
+    overflow: auto;
+    width: 25.1em;
+}
+
+.inventory__row {
+    
+}
+
+.inventory__cell {
+    width: 5em;
+    height: 5em;
+    box-sizing: border-box;
+    border: 1px solid #EEE;
+    float: left;
+}

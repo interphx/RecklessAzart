@@ -138,6 +138,18 @@ function getPathArrayFromRequest(req) {
     return [req.get('host')].concat(req.path.replace(/(^[\/]+|[\/]+$)/g, '').split('/'));
 }
 
+function renderResponse(template, req) {
+    return renderTemplate(template, {
+        currentPage: {
+            path: getPathArrayFromRequest(req)
+        },
+        messages: results,
+        user: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false },
+        // TODO: use $clientData field to modify this behaviour (exclude/include/only, merge)
+        $clientData: {}
+    })
+}
+
 app.get('/', function(req, res) {
     chatServer.fetchLatest(function(err, results) {
         console.log('REQ.USER: ', req.user);

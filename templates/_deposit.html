@@ -1,0 +1,17 @@
+{{#extend 'base'}}
+
+{{#content 'title'}}Пополнить баланс - CSGORevolver{{/content}}
+{{#content 'controller'}}deposit{{/content}}
+
+{{#content 'rightPanel'}}
+<div class="panel">
+    <p>В вашем инвентаре {{ inventory.length }} предметов</p>
+    <div class="inventory inventory--deposit inventory--steam">
+        {{each inventory}}
+            <div class="inventory__cell">{{JSON.stringify(this)}}</div>
+        {{/each}}
+    </div>
+</div>
+{{/content}}
+
+{{/extend}}
