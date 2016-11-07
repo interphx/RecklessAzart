@@ -5,13 +5,22 @@ var config = require('./config');
 var RactiveRenderer = (function() {
     var Ractive = require('ractive');
     var shallowMerge = require('./util').shallowMerge;
-    var clientTemplates = config.clientTemplates;
+    var clientTemplateNames = config.rendering.clientOnly;
     
     function RactiveRenderer(templates) {
         this.renderers = {};
-        this.defaults = {};
+        this.defaults = {
+            clientTemplates: []
+        };
         for (var i = 0; i < templates.length; ++i) {
-            this.loadTemplate(templates[i].name, templates[i].content);
+            var template = templates[i];
+            console.log(template.name);
+            if (clientTemplateNames.indexOf(template.name) >= 0) {
+                this.defaults.clientTemplates.push(template);
+                console.log('==========================')
+                console.log(template.name, clientTemplateNames);
+            }
+            this.loadTemplate(template.name, template.text);
         }
     }
     
@@ -24,18 +33,18 @@ var RactiveRenderer = (function() {
             }
             this.renderers[name] = new Ractive({template: Ractive.parse(content), data: {}});
             // TODO: Global partials are unclean
-            Ractive.partials[name] = this.renderers[name];
+            Ractive.partials[name] = this.renderers[name].template;
         },
         renderTemplate: function(name, data) {
             var renderer = this.renderers[name];
             if (!renderer) {
                 throw new Error('No such template: ' + name);
             }
-            renderer.reset(prepareData(data));
+            renderer.reset(this.prepareData(data));
             return renderer.toHTML();
         },
         render: function(template, data) {
-            return new Ractive({template: template, data: prepareData(data)}).toHTML();
+            return new Ractive({template: template, data: this.prepareData(data)}).toHTML();
         },
         setDefault: function(name, value) {
             this.defaults[name] = value;
@@ -59,7 +68,7 @@ var templates = walkSync('templates').map(function(filename) {
     var basename = path.basename(filename)
     return {
         name: basename.substr(0, basename.lastIndexOf('.')) || basename,
-        content: fs.readFileSync(filename, {encoding: 'utf-8'})
+        text: fs.readFileSync(filename, {encoding: 'utf-8'})
     };
 });
 var renderer = new RactiveRenderer(templates);

@@ -3,10 +3,10 @@
         <div class="logo"><a href="/"><img class="logo-image" src="/assets/img/logo200x25.png"></a></div>
         <div class="mainmenu pure-menu pure-menu-horizontal">
             <ul class="tabs pure-menu-list">
-                <li class="tabs__tab {{#if currentPage.path.[1] === ''}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/">Рулетка</a></li>
-                <li class="tabs__tab {{#if currentPage.path.[1] === 'deposit'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/deposit">Пополнить баланс</a></li>
-                <li class="tabs__tab {{#if currentPage.path.[1] === 'withdraw'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/withdraw">Вывести</a></li>
-                <li class="tabs__tab {{#if currentPage.path.[1] === 'info'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/info">Справка</a></li>
+                <li class="tabs__tab {{#if currentPage.path[1] === ''}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/">Рулетка</a></li>
+                <li class="tabs__tab {{#if currentPage.path[1] === 'deposit'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/deposit">Пополнить баланс</a></li>
+                <li class="tabs__tab {{#if currentPage.path[1] === 'withdraw'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/withdraw">Вывести</a></li>
+                <li class="tabs__tab {{#if currentPage.path[1] === 'info'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/info">Справка</a></li>
             </ul>
             
             {{#if me.loggedIn != true}}

@@ -160,6 +160,7 @@ app.get('/', function(req, res) {
             currentPage: {
                 path: getPathArrayFromRequest(req)
             },
+            countdownValue: rouletteServer.getTimeBeforeRoll() / 1000,
             messages: results,
             // TODO: This is ugly. Make everything be forwarded to client-side DATA by default, use $clientData field to modify this behaviour (exclude/include/only, merge)
             me: (req.user && req.user.getClientSideData) ? util.shallowMerge([{loggedIn: true}, req.user.getClientSideData()]) : { name: 'Anonymous', balance: {money:0}, roles: ['guest'], loggedIn: false },

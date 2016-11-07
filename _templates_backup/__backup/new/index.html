@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<title>Р СѓР»РµС‚РєР° - CSGORevolver</title>
+	<title>Рулетка - CSGORevolver</title>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="assets/css/normalize.css" />
 	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
@@ -17,7 +17,7 @@
 
 <body data-controller="roulette">
 	<script>
-		var DATA = JSON.parse('{{{JSON.stringify($clientData)}}}');
+		var DATA = JSON.parse('{{{jsonify $clientData}}}');
 	</script>
 
 
@@ -34,10 +34,10 @@
 				<div class="logo"><a href="/"><img class="logo-image" src="/assets/img/logo200x25.png"></a></div>
 				<div class="mainmenu pure-menu pure-menu-horizontal">
 					<ul class="tabs pure-menu-list">
-						<li class="tabs__tab {{#if currentPage.path[1] === ''}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/">Р СѓР»РµС‚РєР°</a></li>
-						<li class="tabs__tab {{#if currentPage.path[1] === 'deposit'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/deposit">РџРѕРїРѕР»РЅРёС‚СЊ Р±Р°Р»Р°РЅСЃ</a></li>
-						<li class="tabs__tab {{#if currentPage.path[1] === 'withdraw'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/withdraw">Р’С‹РІРµСЃС‚Рё</a></li>
-						<li class="tabs__tab {{#if currentPage.path[1] === 'info'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/info">РЎРїСЂР°РІРєР°</a></li>
+						<li class="tabs__tab {{#if currentPage.path.[1] === ''}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/">Рулетка</a></li>
+						<li class="tabs__tab {{#if currentPage.path.[1] === 'deposit'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/deposit">Пополнить баланс</a></li>
+						<li class="tabs__tab {{#if currentPage.path.[1] === 'withdraw'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/withdraw">Вывести</a></li>
+						<li class="tabs__tab {{#if currentPage.path.[1] === 'info'}}tabs__tab--active{{/if}} pure-menu-item"><a class="tabs__link pure-menu-link" href="/info">Справка</a></li>
 					</ul>
 					
 					{{#if me.loggedIn != true}}
@@ -49,7 +49,7 @@
 						</div>
 						<div class="miniprofile__column miniprofile__column--right">
 							<span class="miniprofile__name">{{ me.name }}</span><br>
-							<span class="miniprofile__balance">Р‘Р°Р»Р°РЅСЃ: {{ me.balance.money }}</span>		
+							<span class="miniprofile__balance">Баланс: {{ me.balance.money }}</span>		
 						</div>
 					</div>
 					{{/if}}
